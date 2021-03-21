@@ -4,5 +4,25 @@
 // Variables
 @import 'variables';
 
-// Bootstrap
-@import '~bootstrap/scss/bootstrap';
+// Bulma
+@import "~bulma/bulma";
+@import "~buefy/src/scss/buefy";
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.wrapper { flex: 1; }
+
+.has-text-orange { color: #FF9800; }
+
+.footer-frontend, .navbar-frontend {
+    background-color: #0d47a1;
+}
+
+.navbar-item, .navbar-link {
+    color: #ffffff;
+}
+
