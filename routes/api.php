@@ -26,4 +26,7 @@ Route::prefix('movies')->group(function() {
 Route::prefix('series')->group(function() {
     Route::get('/titles-start/{channel}/{pp}', 'SeriesController@titlesStart');
     Route::get('/titles-page/{channel}/{page}/{pp}', 'SeriesController@titlesPage');
+
+    Route::get('/cast/{id}', 'SeriesController@cast');
+    Route::get('/producers/{id}', 'SeriesController@producers');
 });

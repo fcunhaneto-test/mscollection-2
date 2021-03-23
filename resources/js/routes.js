@@ -8,6 +8,11 @@ const routes = [
         component: Titles,
         name: 'frontend-movies'
     },
+    {
+        path: '/series/:channel',
+        component: Titles,
+        name: 'frontend-series'
+    },
 ];
 
 const router = new VueRouter({

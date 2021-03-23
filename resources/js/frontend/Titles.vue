@@ -1,9 +1,31 @@
 <template>
     <div class="container is-max-widescreen mt-5">
         <div v-if="is_table">
-            <h1 class="title is-3">{{ header }} {{ subheader }}</h1>
-            <titles-paginate :pages="pages"></titles-paginate>
-            <titles-table @showTitle="showPage($event)"></titles-table>
+            <div class="columns">
+                <div class="column is-half pb-0">
+                    <h1 class="title is-3">{{ header }} {{ subheader }}</h1>
+                </div>
+                <div class="column is-half pb-0">
+                    <div class="field is-horizontal">
+                        <div class="field-body">
+                            <label for="per_page" class="label mr-2 mt-2">Títulos por página</label>
+                            <div class="select" >
+                                <select id="per_page" v-model="selected" @change="newPP">
+                                    <option value="10">10</option>
+                                    <option value="15">20</option>
+                                    <option value="20">30</option>
+                                    <option value="20">40</option>
+                                    <option value="30">50</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full">
+                <titles-paginate :pages="pages"></titles-paginate>
+                <titles-table @showTitle="showPage($event)"></titles-table>
+            </div>
         </div>
         <title-show v-if="!is_table" :title="title" @viewTable="is_table = !is_table"></title-show>
     </div>
@@ -26,7 +48,8 @@ export default {
         return {
             pages: null,
             is_table: true,
-            title: null
+            title: null,
+            selected: null,
         }
     },
     computed: {
@@ -57,8 +80,12 @@ export default {
             this.is_table = false
             this.title = event
         },
+        newPP() {
+            this.$store.commit('SET_PP', this.selected)
+        }
     },
     beforeMount() {
+        this.selected = this.pp
         this.startTitles()
     },
     updated() {
@@ -68,5 +95,7 @@ export default {
 </script>
 
 <style scoped>
-
+select, option {
+    font-size: 0.9rem;
+}
 </style>
