@@ -18,7 +18,7 @@
 
                     <div class="navbar-dropdown">
                         @foreach($media as $m)
-                        <a class="navbar-item" href="{{ url('/filmes/' . $m->slug) }}">{{ $m->name }}</a>
+                            <a class="navbar-item" href="{{ url('/filmes/' . $m->slug) }}">{{ $m->name }}</a>
                         @endforeach
                     </div>
                 </div>
@@ -34,9 +34,19 @@
                 </div>
             </div>
             <div class="navbar-end">
-                <a class="navbar-item">Register</a>
-                <a class="navbar-item">Login</a>
+                @guest
+                    <a class="navbar-item" href="{{ url('/login') }}">Login</a>
+                    <a class="navbar-item" href="#">Registro</a>
+                @else
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link dropdown-title">{{ Auth::user()->name }}</a>
+                        <div class="navbar-dropdown">
+                            <a class="navbar-item" href="#">Admin</a>
+                            <a class="navbar-item" href="#">Logout</a>
+                        </div>
+                        </li>
+                        @endguest
+                    </div>
             </div>
         </div>
-    </div>
 </nav>

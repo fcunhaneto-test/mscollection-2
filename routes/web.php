@@ -11,5 +11,11 @@ Route::get('/', function () {
 });
 
 Route::get('/filmes/{channel}', 'MovieController@start')->name('movies');
-
 Route::get('/series/{channel}', 'SeriesController@start')->name('series');
+
+Route::get('/login', function () {
+    $c_media = new Media();
+    $media = $c_media->streams();
+
+    return view('auth.login', compact('media'));
+})->name('login');

@@ -20,6 +20,7 @@ Vue.filter('strTime', function (value) {
 })
 
 Vue.component('index', require('./Index').default);
+Vue.component('auth', require('./Auth').default);
 
 const app = new Vue({
     el: '#app',

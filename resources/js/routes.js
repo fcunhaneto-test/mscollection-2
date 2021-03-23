@@ -1,7 +1,7 @@
 import VueRouter from "vue-router";
 
 import Titles from "./frontend/Titles";
-
+import Login from "./auth/Login";
 const routes = [
     {
         path: '/filmes/:channel',
@@ -12,6 +12,11 @@ const routes = [
         path: '/series/:channel',
         component: Titles,
         name: 'frontend-series'
+    },
+    {
+        path: '/login',
+        component: Login,
+        name: 'login'
     },
 ];
 
