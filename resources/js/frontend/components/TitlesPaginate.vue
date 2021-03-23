@@ -39,12 +39,11 @@ export default {
         },
         page() {
             return this.$store.getters.getPage
-        }
+        },
     },
     methods: {
         getPage(num) {
             this.$store.commit('SET_PAGE', num)
-            console.log('URL', `/api/${this.table}/titles-page/${this.channel}/${num}/${this.pp}`)
             axios.get(`/api/${this.table}/titles-page/${this.channel}/${num}/${this.pp}`).then(response => {
                 console.log('SET TITLES', response.data)
                 this.$store.commit('SET_TITLES', response.data)

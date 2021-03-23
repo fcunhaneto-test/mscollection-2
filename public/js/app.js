@@ -2000,6 +2000,50 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+// TODO Melhorar o retorno para volte na mesma página
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "TitleShow",
   props: {
@@ -2105,7 +2149,6 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.$store.commit('SET_PAGE', num);
-      console.log('URL', "/api/".concat(this.table, "/titles-page/").concat(this.channel, "/").concat(num, "/").concat(this.pp));
       axios.get("/api/".concat(this.table, "/titles-page/").concat(this.channel, "/").concat(num, "/").concat(this.pp)).then(function (response) {
         console.log('SET TITLES', response.data);
 
@@ -19810,7 +19853,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.badge[data-v-48893f6b] {\n    font-size: .9rem;\n    font-weight: normal;\n}\n.summary[data-v-48893f6b] {\n    font-size: 1rem;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.card-header[data-v-48893f6b] {\n    width: 100%;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -38102,7 +38145,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "columns is-centered" }, [
     _c("div", { staticClass: "column is-10" }, [
-      _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card is-bordered" }, [
         _c("div", { staticClass: "media has-background-black" }, [
           _c("div", { staticClass: "media-left p-2" }, [
             _vm.title.poster
@@ -38170,13 +38213,101 @@ var render = function() {
                     _vm._v("Categorias: " + _vm._s(_vm.title.category_1))
                   ])
             ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "media-right" }, [
+            _c("div", { staticClass: "column" }, [
+              _c(
+                "button",
+                {
+                  staticClass:
+                    "button is-light is-small has-tooltip-bottom mr-2 ml-2",
+                  attrs: { "data-tooltip": "Voltar" },
+                  on: { click: _vm.viewTable }
+                },
+                [_c("i", { staticClass: "fas fa-undo-alt" })]
+              )
+            ])
           ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-content mb-6 py-0" }, [
+          _c("div", { staticClass: "mt-5 ml-3" }, [
+            _c("h5", { staticClass: "title is-6 mb-2 pb-0" }, [
+              _vm._v("Resumo:")
+            ]),
+            _vm._v(" "),
+            _c("p", [_vm._v(_vm._s(_vm.title.summary))])
+          ]),
+          _vm._v(" "),
+          _vm.cast.length > 0
+            ? _c(
+                "table",
+                { staticClass: "table table is-fullwidth mt-5 mb-0" },
+                [
+                  _vm._m(0),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.cast, function(ac) {
+                      return _c("tr", [
+                        _c("td", { staticClass: "pl-5" }, [
+                          _vm._v(_vm._s(ac.actor))
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(ac.character))])
+                      ])
+                    }),
+                    0
+                  )
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.producers.length > 0
+            ? _c("table", { staticClass: "table table is-fullwidth mt-5" }, [
+                _c("thead", { staticClass: "has-background-white" }, [
+                  _c("tr", [
+                    _c("th", { staticClass: "title is-6" }, [
+                      _vm.table === "movies"
+                        ? _c("span", [_vm._v("Diretor(es)")])
+                        : _c("span", [_vm._v("Criador(es)")])
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "tbody",
+                  _vm._l(_vm.producers, function(producer) {
+                    return _c("tr", [
+                      _c("td", { staticClass: "pl-5" }, [
+                        _vm._v(_vm._s(producer.name))
+                      ])
+                    ])
+                  }),
+                  0
+                )
+              ])
+            : _vm._e()
         ])
       ])
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", { staticClass: "has-background-white" }, [
+      _c("tr", [
+        _c("th", { staticClass: "title is-6" }, [_vm._v("Ator/Personagem")]),
+        _vm._v(" "),
+        _c("th")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 

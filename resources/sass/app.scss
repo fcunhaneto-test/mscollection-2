@@ -7,6 +7,7 @@
 // Bulma
 @import "~bulma/bulma";
 @import "~buefy/src/scss/buefy";
+@import "~@creativebulma/bulma-tooltip/src/sass/index";
 
 body {
     display: flex;
@@ -17,6 +18,10 @@ body {
 .wrapper { flex: 1; }
 
 .has-text-orange { color: #FF9800; }
+
+.is-bordered {
+    border: 1px solid #0a0a0a;
+}
 
 .footer-frontend {
     background-color: #0080b4;

@@ -1,7 +1,7 @@
 <template>
     <div class="columns is-centered">
         <div class="column is-10">
-            <div class="card">
+            <div class="card is-bordered">
                 <div class="media has-background-black">
                     <div class="media-left p-2">
                         <img v-if="title.poster" :src="'../images/poster/' + title.poster" width="150" height="203"
@@ -25,6 +25,49 @@
                             <span v-else class="tag is-link">Categorias: {{ title.category_1 }}</span>
                         </p>
                     </div>
+                    <div class="media-right">
+                        <div class="column">
+                            <button class="button is-light is-small has-tooltip-bottom mr-2 ml-2" data-tooltip="Voltar"
+                                    @click="viewTable">
+                                <i class="fas fa-undo-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content mb-6 py-0">
+                    <div class="mt-5 ml-3">
+                        <h5 class="title is-6 mb-2 pb-0">Resumo:</h5>
+                        <p>{{ title.summary }}</p>
+                    </div>
+                    <table v-if="cast.length > 0" class="table table is-fullwidth mt-5 mb-0">
+                        <thead class="has-background-white">
+                        <tr>
+                            <th class="title is-6">Ator/Personagem</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="ac in cast">
+                            <td class="pl-5">{{ ac.actor }}</td>
+                            <td>{{ ac.character }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table v-if="producers.length > 0" class="table table is-fullwidth mt-5">
+                        <thead class="has-background-white">
+                        <tr>
+                            <th class="title is-6">
+                                <span v-if="table === 'movies'">Diretor(es)</span>
+                                <span v-else>Criador(es)</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="producer in producers">
+                            <td class="pl-5">{{ producer.name }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -32,6 +75,7 @@
 </template>
 
 <script>
+// TODO Melhorar o retorno para volte na mesma página
 export default {
     name: "TitleShow",
     props: {
@@ -73,12 +117,7 @@ export default {
 </script>
 
 <style scoped>
-.badge {
-    font-size: .9rem;
-    font-weight: normal;
-}
-
-.summary {
-    font-size: 1rem;
+.card-header {
+    width: 100%;
 }
 </style>
