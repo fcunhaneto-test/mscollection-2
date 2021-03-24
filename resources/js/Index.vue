@@ -14,7 +14,6 @@ export default {
         this.$store.commit('SET_TABLE', this.table)
         this.$store.commit('SET_HEADER', this.header)
         this.$store.commit('SET_SUB_HEADER', this.subheader)
-        console.log('CHANNEL', this.$route.params.channel)
         this.$store.commit('SET_CHANNEL', this.$route.params.channel)
     }
 }

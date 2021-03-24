@@ -43,11 +43,11 @@ class AuthenticatorController extends Controller
         ];
 
         if(!Auth::attempt($credenciais)) {
-            return response()->json(['resp' => 'Acesso Negado'], 401);
+            return response()->json('Acesso Negado', 401);
         }
 
         $user = $request->user();
-        return response()->json(['resp' => 'Você fez o login com sucesso'], 201);
+        return response()->json('Você fez o login com sucesso', 201);
     }
 
     public function logout(Request $request)
