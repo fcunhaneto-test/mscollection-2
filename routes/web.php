@@ -19,3 +19,10 @@ Route::get('/login', function () {
 
     return view('auth.login', compact('media'));
 })->name('login');
+
+Route::get('/logout', function () {
+    $c_media = new Media();
+    $media = $c_media->streams();
+
+    return view('auth.logout', compact('media'));
+})->name('logout');

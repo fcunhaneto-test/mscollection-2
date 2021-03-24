@@ -2,6 +2,8 @@ import VueRouter from "vue-router";
 
 import Titles from "./frontend/Titles";
 import Login from "./auth/Login";
+import Logout from "./auth/Logout";
+
 const routes = [
     {
         path: '/filmes/:channel',
@@ -17,6 +19,11 @@ const routes = [
         path: '/login',
         component: Login,
         name: 'login'
+    },
+    {
+        path: '/logout',
+        component: Logout,
+        name: 'logout'
     },
 ];
 

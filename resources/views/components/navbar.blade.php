@@ -42,7 +42,7 @@
                         <a class="navbar-link dropdown-title">{{ Auth::user()->name }}</a>
                         <div class="navbar-dropdown">
                             <a class="navbar-item" href="#">Admin</a>
-                            <a class="navbar-item" href="#">Logout</a>
+                            <a class="navbar-item" href="{{ url('/logout') }}">Logout</a>
                         </div>
                         </li>
                         @endguest

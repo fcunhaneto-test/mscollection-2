@@ -10,7 +10,7 @@
                         <div class="field">
                             <label for="email" class="label">Email</label>
                             <div class="control has-icons-left has-icons-right">
-                                <input id="email" type="email" class="input">
+                                <input id="email" type="email" v-model="email" class="input" aria-required="true">
                                 <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
                             </div>
                             <p v-if="errors.email" class="help is-danger">{{ errors.email[0] }}</p>
@@ -18,13 +18,13 @@
                         <div class="field mt-4">
                             <label for="password" class="label">Senha</label>
                             <div class="control has-icons-left has-icons-right">
-                                <input id="password" class="input" type="text">
+                                <input id="password" type="password" v-model="password" class="input" aria-required="true">
                                 <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
                             </div>
                             <p v-if="errors.password" class="help is-danger">{{ errors.password[0] }}</p>
                         </div>
                         <div class="field has-text-centered mt-4">
-                            <button class="button is-success">ENVIAR</button>
+                            <button class="button is-success" @click="login">ENVIAR</button>
                         </div>
                     </div>
                 </div>

@@ -32,12 +32,12 @@
 </template>
 
 <script>
-import TitlesTable from "./components/TitlesTable";
-import TitlesPaginate from "./components/TitlesPaginate";
-import TitleShow from "./components/TitleShow";
+// import TitlesTable from "./components/TitlesTable";
+// import TitlesPaginate from "./components/TitlesPaginate";
+// import TitleShow from "./components/TitleShow";
 
 export default {
-    name: "Titles",
+    name: "TitlesAdmin",
     components: {TitleShow, TitlesPaginate, TitlesTable},
     comments: {
         TitlesTable,
