@@ -19,8 +19,15 @@ Vue.filter('strTime', function (value) {
     }
 })
 
+Vue.filter('strSingular', function (value) {
+    if(value) {
+        return value.slice(0, -1).toUpperCase();
+    }
+})
+
 Vue.component('index', require('./Index').default);
 Vue.component('auth', require('./Auth').default);
+Vue.component('admin', require('./Admin').default);
 
 const app = new Vue({
     el: '#app',

@@ -5,7 +5,7 @@
                 <div class="column is-narrow pb-0">
                     <h1 class="title is-3">{{ header }} {{ subheader }}</h1>
                 </div>
-                <div class="column pb-0">
+                <div class="column is-3 pb-0">
                     <div class="field is-horizontal">
                         <div class="field-body">
                             <label for="per_page" class="label mr-2 mt-2">Títulos por página</label>
@@ -21,24 +21,30 @@
                         </div>
                     </div>
                 </div>
+                <div class="column is-3 has-text-right pb-0">
+                    <button class="button is-link ml-6" @click="newTitle">NOVO {{ header|strSingular }}</button>
+                </div>
             </div>
             <div class="column is-full">
                 <titles-paginate :pages="pages"></titles-paginate>
                 <titles-table @showTitle="showPage($event)"></titles-table>
             </div>
         </div>
-        <title-show v-if="!is_table" :title="title" @viewTable="is_table = !is_table"></title-show>
     </div>
 </template>
 
 <script>
-import TitlesTable from "./components/TitlesTable";
-import TitlesPaginate from "./components/TitlesPaginate";
-import TitleShow from "./components/TitleShow";
+import TitlesTable from "./components/TitlesAdminTable";
+import TitlesPaginate from "./components/TitlesAdminPaginate";
+// import TitleShow from "./components/TitleShow";
 
 export default {
-    name: "Titles",
-    components: {TitleShow, TitlesPaginate, TitlesTable},
+    name: "TitlesAdmin",
+    components: {TitlesPaginate, TitlesTable},
+    props: {
+        table: String,
+        header: String
+    },
     data() {
         return {
             pages: null,
@@ -48,12 +54,6 @@ export default {
         }
     },
     computed: {
-        table() {
-            return this.$store.getters.getTable
-        },
-        header() {
-            return this.$store.getters.getHeader
-        },
         subheader() {
             return this.$store.getters.getSubHeader
         },
@@ -66,7 +66,7 @@ export default {
     },
     methods: {
         startTitles() {
-            axios.get(`/api/${this.table}/titles-start/${this.channel}/${this.pp}`).then(response => {
+            axios.get(`/api/admin/${this.table}/titles-start/${this.channel}/${this.pp}`).then(response => {
                 this.pages = response.data[0]
                 this.$store.commit('SET_TITLES', response.data[1])
             })
@@ -77,10 +77,16 @@ export default {
         },
         newPP() {
             this.$store.commit('SET_PP', this.selected)
+        },
+        newTitle() {
+            if(this.table === 'movies') {
+                this.$router.push('/admin/novo/filme')
+            }
         }
     },
     beforeMount() {
         this.selected = this.pp
+        this.$store.commit('SET_TABLE', this.table)
         this.startTitles()
     },
     updated() {

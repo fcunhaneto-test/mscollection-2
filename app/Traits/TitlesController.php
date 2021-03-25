@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\Qualifiers\Media;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use function GuzzleHttp\Promise\all;
 
 trait TitlesController
 {
     public function start($channel) {
-        $url      = url()->current();
+        $url = url()->current();
         $url_path = parse_url($url, PHP_URL_PATH);
         $basename = explode('/', $url_path);
 
@@ -36,6 +37,21 @@ trait TitlesController
         $subheader = $c_media->where('slug', $channel)->first()->name;
 
         return view('titles', compact('table', 'header', 'subheader', 'media'));
+    }
+
+    public function startAdmin($channel) {
+        $url = url()->current();
+        $url_path = parse_url($url, PHP_URL_PATH);
+        $basename = explode('/', $url_path);
+
+        if($basename[2] == 'filmes') {
+            $header = 'Filmes';
+        } else {
+            $header = 'Séries';
+        }
+        $media = Media::all();
+        $subheader = $media->where('slug', $channel)->first()->name;
+        return view('admin', compact('header', 'subheader', 'media'));
     }
 
     public function titlesStart($channel, $pp) {
