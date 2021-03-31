@@ -21,6 +21,7 @@ Route::prefix('movies')->group(function() {
 
     Route::get('/cast/{id}', 'MovieController@cast');
     Route::get('/producers/{id}', 'MovieController@producers');
+    Route::post('/scrapping', 'ScrapingController@imdbScrapping');
 });
 
 Route::prefix('series')->group(function() {
@@ -45,4 +46,16 @@ Route::prefix('admin')->group(function() {
 
     Route::get('/series/cast/{id}', 'SeriesController@cast')->middleware('can:isAdmin');
     Route::get('/series/producers/{id}', 'SeriesController@producers')->middleware('can:isAdmin');
+});
+
+Route::prefix('media')->group(function() {
+    Route::get('', 'Qualifiers\MediaController@index') ;
+});
+
+Route::prefix('categories')->group(function() {
+    Route::get('', 'Qualifiers\CategoryController@index') ;
+});
+
+Route::prefix('keywords')->group(function() {
+    Route::get('', 'Qualifiers\KeywordController@index') ;
 });

@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Qualifiers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Qualifiers\Media;
+use App\Models\Qualifiers\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
-class MediaController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return Media[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Http\Response
+     * @return Category[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Http\Response
      */
     public function index()
     {
-        return Media::all();
+        return Category::all();
     }
 
     /**

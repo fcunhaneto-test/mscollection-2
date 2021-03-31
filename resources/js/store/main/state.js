@@ -7,4 +7,7 @@ export default {
     page: 1,
     titles: null,
     title: null,
+    media: null,
+    categories: null,
+    keywords: null,
 }

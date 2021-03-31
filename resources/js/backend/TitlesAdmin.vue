@@ -92,6 +92,17 @@ export default {
     updated() {
         this.startTitles()
     },
+    created() {
+        axios.get('/api/media').then(response => {
+            this.$store.commit('SET_MEDIA', response.data)
+        }).catch(error => console.error(error))
+        axios.get('/api/categories').then(response => {
+            this.$store.commit('SET_CATEGORIES', response.data)
+        }).catch(error => console.error(error))
+        axios.get('/api/keywords').then(response => {
+            this.$store.commit('SET_KEYWORDS', response.data)
+        }).catch(error => console.error(error))
+    }
 }
 </script>
 

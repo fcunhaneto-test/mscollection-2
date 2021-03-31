@@ -7,4 +7,7 @@ export default {
     getPage: state => { return state.page },
     getTitles: state => { return state.titles },
     getTitle: state => { return state.title },
+    getMedia: state => { return state.media },
+    getCategories: state => { return state.categories},
+    getKeywords: state => { return state.keywords },
 }

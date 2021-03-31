@@ -20,7 +20,7 @@
                                 <label for="password" class="label">Senha</label>
                                 <div class="control has-icons-left has-icons-right">
                                     <input id="password" type="password" v-model="password" class="input"
-                                           aria-required="true">
+                                           aria-required="true" @keyup.enter="login">
                                     <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
                                 </div>
                                 <p v-if="errors.password" class="help is-danger">{{ errors.password[0] }}</p>

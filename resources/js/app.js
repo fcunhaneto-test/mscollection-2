@@ -32,5 +32,5 @@ Vue.component('admin', require('./Admin').default);
 const app = new Vue({
     el: '#app',
     store,
-    router
+    router,
 });
