@@ -16824,3 +16824,7 @@ body {
 a.table-link:hover {
   color: #00d138;
 }
+
+.field.has-addons .control:first-child:not(:only-child) .input {
+  color: red;
+}

@@ -32,7 +32,7 @@
                     <div class="column is-3">
                         <div class="field">
                             <label for="year" class="label">Ano</label>
-                            <input id="year" name="title" v-model="formData.year" class="input" type="number">
+                            <input id="year" name="title" v-model="formData.year" class="input" type="text">
                         </div>
                     </div>
                     <div class="column is-3">
@@ -58,7 +58,7 @@
                         <b-field label="Categoria 1" class="form-edit">
                             <b-input list="categories_1" name="category" v-model="formData.category_1" style="width: 100%;"/>
                             <datalist id="categories_1">
-                                <option v-for="category in categories" :value="category.name"/>
+                                <option v-for="category in categories" :value="category.name" style="color: red"/>
                             </datalist>
                         </b-field>
                     </div>
@@ -66,7 +66,7 @@
                         <b-field label="Categoria 2" class="form-edit">
                             <b-input list="categories_2" name="category" v-model="formData.category_2" style="width: 100%;"/>
                             <datalist id="categories_2">
-                                <option v-for="category in categories" :value="category.name"/>
+                                <option v-for="category in categories" :value="category.name" style="color: red"/>
                             </datalist>
                         </b-field>
                     </div>
@@ -74,7 +74,7 @@
                         <b-field label="Keyword" class="form-edit">
                             <b-input list="keywords" name="category_2" v-model="formData.keyword" style="width: 100%;"/>
                             <datalist id="keywords">
-                                <option v-for="keyword in keywords" :value="keyword.name"/>
+                                <option v-for="keyword in keywords" :value="keyword.name" style="color: red"/>
                             </datalist>
                         </b-field>
                     </div>
@@ -135,43 +135,64 @@ export default {
             this.formData.rating = this.yellow
         },
         imdbScraping() {
-            axios.post('/api/movies/scrapping/', {
-                html: this.imdb
-            }).then(response => {
-                const $ = cheerio.load(response.data)
-                const context = $('.subtext').text()
-                let arr = context.split('|')
-                let str = arr.map((value, index) => {
-                    let nv = value.replace(/(\r\n|\n|\r)/gm, "")
-                    return nv.trim();
-                })
-                console.log(str)
-                this.setTime(arr[1])
-                this.setCategories(arr[2])
+            const options1 = {
+                method: 'GET',
+                url: 'https://imdb8.p.rapidapi.com/title/get-full-credits',
+                params: {tconst: this.imdb},
+                headers: {
+                    'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
+                    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
+                }
+            };
 
-                const title = $('.title_wrapper').find('h1').text()
+            axios.request(options1).then(response => {
+                console.log('RESPONSE', response.data)
+                this.formData.original_title = response.data.base.title
+                this.formData.year = response.data.base.year
+                this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
+                let cast = []
+                for(let i=0; i<10; i++) {
+                    let actor = response.data.cast[i].name
+                    let characters = response.data.cast[i].characters
+                    console.log('Characters', i, response.data.cast[i].characters)
+                    let character = ''
+                    if (response.data.cast[i].characters.length === 1) {
+                        character = response.data.cast[i].characters[0]
+                    } else if (response.data.cast[i].characters.length > 1) {
+                        character = response.data.cast[i].characters[0] + ' / ' + response.data.cast[i].characters[1]
+                    }
+                    cast.push({actor: response.data.cast[i].name, character: character})
+                }
+                console.log('CAST', cast)
+            }).catch(error => console.error(error) );
 
-                this.setTitleYear(title)
+            const options2 = {
+                method: 'GET',
+                url: 'https://imdb8.p.rapidapi.com/title/get-genres',
+                params: {tconst: this.imdb},
+                headers: {
+                    'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
+                    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
+                }
+            };
 
-                const original_title = $('.originalTitle').text().split(' (')
-                this.formData.original_title = original_title[0]
-            }).catch(error => console.error(error))
+            axios.request(options2).then(response => {
+                for(let i=0; i<this.categories.length; i++) {
+                    if(this.categories[i].e_name === response.data[0]) {
+                        this.formData.category_1 = this.categories[i].name
+                    }
+                    if(this.categories[i].e_name === response.data[1]) {
+                        this.formData.category_2 = this.categories[i].name
+                    }
+                }
+                console.log('Category 1', this.formData.category_1)
+                console.log('Category 2', this.formData.category_2)
+            }).catch(error => console.error(error));
         },
-        setTime(t) {
-            let v = t.replace(/(h|min)/gm, "")
-            const t_arr = v.trim().split(' ')
-            this.formData.time = '0' + t_arr[0] + ':' + t_arr[1]
-        },
-        setCategories(c) {
-            let nc = c.replace(/(\r\n|\n|\r)/gm, "")
-            let categories = nc.split(', ')
-            console.log('Categoria 1', categories[0])
-            console.log('Categoria 2', categories[1])
-        },
-        setTitleYear(ty) {
-            let ty_arr = ty.split('(')
-            this.formData.title = ty_arr[0].trim()
-            this.formData.year = parseInt(ty_arr[1].split(')'))
+        strTime(t) {
+            const minute = t % 60
+            const hour = Math.floor((t / 60))
+            return '0' + hour + ':' + minute
         }
     },
 }
@@ -184,4 +205,8 @@ hr {
     color: #000000;
     background-color:#000000;
 }
+.input {
+    color: red;
+}
+
 </style>
