@@ -40,5 +40,7 @@ a.table-link:hover {
 }
 
 .field.has-addons .control:first-child:not(:only-child), .select select, .taginput .taginput-container.is-focusable, .textarea, .input  {
-    color: red;
+    color: #0d47a1;
+    border: 1px solid #000000;
+    border-radius: 4px;
 }

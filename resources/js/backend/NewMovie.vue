@@ -7,10 +7,6 @@
                     <div class="field">
                         <label for="imdb" class="label">IMDB</label>
                         <input id="imdb" name="imdb" v-model="imdb" class="input" type="text" @keyup.enter="imdbScraping">
-                        <div class="field">
-                            <label for="ac" class="label">Adoro Cinema</label>
-                            <input id="ac" name="ac" v-model="ac" class="input" type="text" @keyup.enter="">
-                        </div>
                     </div>
                 </div>
                 <hr>
@@ -97,6 +93,11 @@
                         </div>
                     </div>
                 </div>
+                <div class="columns is-centered">
+                    <div class="column is-one-third">
+                        <button class="button is-primary is-fullwidth">ENVIAR</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -170,7 +171,7 @@ export default {
             };
 
             axios.request(options1).then(response => {
-                console.log('RESPONSE', response.data)
+                // console.log('RESPONSE', response.data)
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
@@ -194,7 +195,7 @@ export default {
                     cast.push({actor: response.data.cast[i].name, character: character})
                 }
                 console.log('CAST', cast)
-            }).catch(error => console.error(error) );
+            }).catch(error => console.error(error) )
 
             const options2 = {
                 method: 'GET',
@@ -217,7 +218,7 @@ export default {
                 }
                 console.log('Category 1', this.formData.category_1)
                 console.log('Category 2', this.formData.category_2)
-            }).catch(error => console.error(error));
+            }).catch(error => console.error(error))
         },
         strTime(t) {
             const minute = t % 60
