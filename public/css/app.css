@@ -16825,6 +16825,6 @@ a.table-link:hover {
   color: #00d138;
 }
 
-.field.has-addons .control:first-child:not(:only-child) .input {
+.field.has-addons .control:first-child:not(:only-child), .select select, .taginput .taginput-container.is-focusable, .textarea, .input {
   color: red;
 }

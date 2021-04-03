@@ -8,8 +8,8 @@
                         <label for="imdb" class="label">IMDB</label>
                         <input id="imdb" name="imdb" v-model="imdb" class="input" type="text" @keyup.enter="imdbScraping">
                         <div class="field">
-                            <label for="adoro_cinema" class="label">Adoro Cinema</label>
-                            <input id="adoro_cinema" name="adoro_cinema" class="input" type="text">
+                            <label for="ac" class="label">Adoro Cinema</label>
+                            <input id="ac" name="ac" v-model="ac" class="input" type="text" @keyup.enter="">
                         </div>
                     </div>
                 </div>
@@ -79,6 +79,24 @@
                         </b-field>
                     </div>
                 </div>
+                <div class="columns">
+                    <div class="column is-4">
+                        <label for="media" class="label">Mídia</label>
+                        <div class="select is-fullwidth" >
+                            <select id="media" v-model="formData.media">
+                                <option v-for="m in media" :value="m.id">{{ m.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column is-8">
+                        <div class="field-body">
+                            <div class="field">
+                                <label for="poster" class="label">Poster URL</label>
+                                <input id="poster" name="imdb" v-model="formData.poster" class="input" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -104,9 +122,12 @@ export default {
                 keyword: null,
                 poster: '',
                 summary: '',
+                media: null,
+                img_width: 0,
+                img_height: 0
             },
             imdb: '',
-            adoro_cinema: '',
+            ac: '',
         }
     },
     computed: {
@@ -115,6 +136,9 @@ export default {
         },
         keywords() {
             return this.$store.getters.getKeywords
+        },
+        media() {
+            return this.$store.getters.getMedia
         }
     },
     methods: {
@@ -150,6 +174,12 @@ export default {
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
+                this.formData.poster = response.data.base.image.url
+                this.formData.img_width = response.data.base.image.width
+                this.formData.img_height = response.data.base.image.height
+                console.log('IMG WIDTH', this.formData.img_width)
+                console.log('IMG HEIGHT', this.formData.img_height)
+
                 let cast = []
                 for(let i=0; i<10; i++) {
                     let actor = response.data.cast[i].name
@@ -205,8 +235,4 @@ hr {
     color: #000000;
     background-color:#000000;
 }
-.input {
-    color: red;
-}
-
 </style>
