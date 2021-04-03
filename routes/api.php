@@ -21,7 +21,8 @@ Route::prefix('movies')->group(function() {
 
     Route::get('/cast/{id}', 'MovieController@cast');
     Route::get('/producers/{id}', 'MovieController@producers');
-    Route::post('/scrapping', 'ScrapingController@imdbScrapping');
+
+    Route::post('/store', 'MovieController@store');
 });
 
 Route::prefix('series')->group(function() {

@@ -2,6 +2,7 @@
     <div class="container is-max-widescreen mt-5">
         <div class="columns is-centered">
             <div class="column is-four-fifths">
+                <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="true"></b-loading>
                 <h2 class="title is-4">Scrapping From</h2>
                 <div class="field-body">
                     <div class="field">
@@ -11,20 +12,20 @@
                 </div>
                 <hr>
                 <h2 class="title is-4">Filme Formulário</h2>
-                <div class="field is-horizontal">
-                    <div class="field-body">
+                <div class="columns is-multiline">
+                    <div class="column is-half">
                         <div class="field">
                             <label for="title" class="label">Título</label>
                             <input id="title" name="title" v-model="formData.title" class="input" type="text">
                         </div>
+                    </div>
+                    <div class="column is-half">
                         <div class="field">
                             <label for="original_title" class="label">Título Original</label>
                             <input id="original_title" name="original_title" v-model="formData.original_title"
                                    class="input" type="text">
                         </div>
                     </div>
-                </div>
-                <div class="columns">
                     <div class="column is-3">
                         <div class="field">
                             <label for="year" class="label">Ano</label>
@@ -48,8 +49,6 @@
                             </a>
                         </div>
                     </div>
-                </div>
-                <div class="columns">
                     <div class="column is-4">
                         <b-field label="Categoria 1" class="form-edit">
                             <b-input list="categories_1" name="category" v-model="formData.category_1" style="width: 100%;"/>
@@ -74,8 +73,6 @@
                             </datalist>
                         </b-field>
                     </div>
-                </div>
-                <div class="columns">
                     <div class="column is-4">
                         <label for="media" class="label">Mídia</label>
                         <div class="select is-fullwidth" >
@@ -95,7 +92,15 @@
                 </div>
                 <div class="columns is-centered">
                     <div class="column is-one-third">
-                        <button class="button is-primary is-fullwidth">ENVIAR</button>
+                        <button class="button is-primary is-fullwidth" @click="store">ENVIAR</button>
+                    </div>
+                </div>
+                <div class="column is-full">
+                    <div class="field">
+                        <label for="title" class="label">Resumo</label>
+                        <div class="control">
+                            <textarea class="textarea" placeholder="Normal textarea"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -104,12 +109,12 @@
 </template>
 
 <script>
-import cheerio from "cheerio";
-const translate = {}
+
 export default {
     name: "NewMovie",
     data() {
         return {
+            isLoading: false,
             yellow: 0,
             white: 5,
             formData: {
@@ -160,6 +165,7 @@ export default {
             this.formData.rating = this.yellow
         },
         imdbScraping() {
+            this.isLoading = true
             const options1 = {
                 method: 'GET',
                 url: 'https://imdb8.p.rapidapi.com/title/get-full-credits',
@@ -171,7 +177,7 @@ export default {
             };
 
             axios.request(options1).then(response => {
-                // console.log('RESPONSE', response.data)
+                console.log('RESPONSE', response.data)
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
@@ -195,7 +201,8 @@ export default {
                     cast.push({actor: response.data.cast[i].name, character: character})
                 }
                 console.log('CAST', cast)
-            }).catch(error => console.error(error) )
+                this.isLoading = false
+            }).catch(error => console.error(error))
 
             const options2 = {
                 method: 'GET',
@@ -224,6 +231,11 @@ export default {
             const minute = t % 60
             const hour = Math.floor((t / 60))
             return '0' + hour + ':' + minute
+        },
+        store() {
+            axios.post('/api/movies/store', this.formData).then(response => {
+                console.log('STORE', response.data)
+            }).catch(error => console.error(error))
         }
     },
 }
