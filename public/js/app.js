@@ -2149,6 +2149,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "NewMovie",
   data: function data() {
@@ -2167,12 +2171,14 @@ __webpack_require__.r(__webpack_exports__);
         keyword: null,
         poster: '',
         summary: '',
-        media: null,
+        media: 0,
+        img_url: '',
         img_width: 0,
         img_height: 0
       },
       imdb: '',
-      ac: ''
+      ac: '',
+      media_id: 0
     };
   },
   computed: {
@@ -2204,6 +2210,10 @@ __webpack_require__.r(__webpack_exports__);
       this.white = 5 - this.yellow;
       this.formData.rating = this.yellow;
     },
+
+    /**
+     * Scraping datas from IMDB
+     */
     imdbScraping: function imdbScraping() {
       var _this = this;
 
@@ -2220,15 +2230,13 @@ __webpack_require__.r(__webpack_exports__);
         }
       };
       axios.request(options1).then(function (response) {
-        console.log('RESPONSE', response.data);
         _this.formData.original_title = response.data.base.title;
         _this.formData.year = response.data.base.year;
         _this.formData.time = _this.strTime(response.data.base.runningTimeInMinutes);
-        _this.formData.poster = response.data.base.image.url;
+        _this.formData.img_url = response.data.base.image.url;
         _this.formData.img_width = response.data.base.image.width;
         _this.formData.img_height = response.data.base.image.height;
-        console.log('IMG WIDTH', _this.formData.img_width);
-        console.log('IMG HEIGHT', _this.formData.img_height);
+        console.log('MEDIA ID', _this.formData.media);
         var cast = [];
 
         for (var i = 0; i < 10; i++) {
@@ -2275,9 +2283,6 @@ __webpack_require__.r(__webpack_exports__);
             _this.formData.category_2 = _this.categories[i].name;
           }
         }
-
-        console.log('Category 1', _this.formData.category_1);
-        console.log('Category 2', _this.formData.category_2);
       })["catch"](function (error) {
         return console.error(error);
       });
@@ -2287,9 +2292,17 @@ __webpack_require__.r(__webpack_exports__);
       var hour = Math.floor(t / 60);
       return '0' + hour + ':' + minute;
     },
+
+    /**
+     * Send data to store movie.
+     */
     store: function store() {
+      var _this2 = this;
+
       axios.post('/api/movies/store', this.formData).then(function (response) {
+        _this2.isLoading = true;
         console.log('STORE', response.data);
+        _this2.isLoading = false;
       })["catch"](function (error) {
         return console.error(error);
       });
@@ -20522,7 +20535,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\nhr[data-v-8dbe94ae] {\n    height: 2px;\n    border-width: 0;\n    color: #000000;\n    background-color:#000000;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\nhr[data-v-8dbe94ae] {\n    height: 2px;\n    border-width: 0;\n    color: #000000;\n    background-color: #000000;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -40160,29 +40173,30 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.formData.media,
-                        expression: "formData.media"
+                        value: _vm.media_id,
+                        expression: "media_id"
                       }
                     ],
                     attrs: { id: "media" },
                     on: {
-                      change: function($event) {
-                        var $$selectedVal = Array.prototype.filter
-                          .call($event.target.options, function(o) {
-                            return o.selected
-                          })
-                          .map(function(o) {
-                            var val = "_value" in o ? o._value : o.value
-                            return val
-                          })
-                        _vm.$set(
-                          _vm.formData,
-                          "media",
-                          $event.target.multiple
+                      change: [
+                        function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.media_id = $event.target.multiple
                             ? $$selectedVal
                             : $$selectedVal[0]
-                        )
-                      }
+                        },
+                        function($event) {
+                          _vm.formData.media = _vm.media_id
+                        }
+                      ]
                     }
                   },
                   _vm._l(_vm.media, function(m) {
@@ -40191,7 +40205,9 @@ var render = function() {
                     ])
                   }),
                   0
-                )
+                ),
+                _vm._v(" "),
+                _c("p", [_vm._v("Selected: " + _vm._s(_vm.formData.media))])
               ])
             ]),
             _vm._v(" "),
@@ -40209,19 +40225,53 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.formData.poster,
-                        expression: "formData.poster"
+                        value: _vm.formData.img_url,
+                        expression: "formData.img_url"
                       }
                     ],
                     staticClass: "input",
                     attrs: { id: "poster", name: "imdb", type: "text" },
-                    domProps: { value: _vm.formData.poster },
+                    domProps: { value: _vm.formData.img_url },
                     on: {
                       input: function($event) {
                         if ($event.target.composing) {
                           return
                         }
-                        _vm.$set(_vm.formData, "poster", $event.target.value)
+                        _vm.$set(_vm.formData, "img_url", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "column is-full" }, [
+              _c("div", { staticClass: "field" }, [
+                _c(
+                  "label",
+                  { staticClass: "label", attrs: { for: "summary" } },
+                  [_vm._v("Resumo")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "control" }, [
+                  _c("textarea", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.formData.summary,
+                        expression: "formData.summary"
+                      }
+                    ],
+                    staticClass: "textarea",
+                    attrs: { id: "summary" },
+                    domProps: { value: _vm.formData.summary },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.formData, "summary", $event.target.value)
                       }
                     }
                   })
@@ -40241,9 +40291,7 @@ var render = function() {
                 [_vm._v("ENVIAR")]
               )
             ])
-          ]),
-          _vm._v(" "),
-          _vm._m(2)
+          ])
         ],
         1
       )
@@ -40265,25 +40313,6 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("span", { staticClass: "icon has-text-orange" }, [
       _c("i", { staticClass: "far fa-star" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "column is-full" }, [
-      _c("div", { staticClass: "field" }, [
-        _c("label", { staticClass: "label", attrs: { for: "title" } }, [
-          _vm._v("Resumo")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "control" }, [
-          _c("textarea", {
-            staticClass: "textarea",
-            attrs: { placeholder: "Normal textarea" }
-          })
-        ])
-      ])
     ])
   }
 ]

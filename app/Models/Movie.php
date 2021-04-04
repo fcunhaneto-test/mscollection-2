@@ -20,7 +20,7 @@ class Movie extends Model
 
     public function media()
     {
-        return $this->belongsToMany(Media::class)->withPivot('active');
+        return $this->belongsToMany(Media::class)->withPivot('active', 'slug');
     }
 
     public function directors()

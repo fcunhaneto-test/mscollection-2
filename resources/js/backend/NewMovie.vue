@@ -7,7 +7,8 @@
                 <div class="field-body">
                     <div class="field">
                         <label for="imdb" class="label">IMDB</label>
-                        <input id="imdb" name="imdb" v-model="imdb" class="input" type="text" @keyup.enter="imdbScraping">
+                        <input id="imdb" name="imdb" v-model="imdb" class="input" type="text"
+                               @keyup.enter="imdbScraping">
                     </div>
                 </div>
                 <hr>
@@ -51,7 +52,8 @@
                     </div>
                     <div class="column is-4">
                         <b-field label="Categoria 1" class="form-edit">
-                            <b-input list="categories_1" name="category" v-model="formData.category_1" style="width: 100%;"/>
+                            <b-input list="categories_1" name="category" v-model="formData.category_1"
+                                     style="width: 100%;"/>
                             <datalist id="categories_1">
                                 <option v-for="category in categories" :value="category.name" style="color: red"/>
                             </datalist>
@@ -59,7 +61,8 @@
                     </div>
                     <div class="column is-4">
                         <b-field label="Categoria 2" class="form-edit">
-                            <b-input list="categories_2" name="category" v-model="formData.category_2" style="width: 100%;"/>
+                            <b-input list="categories_2" name="category" v-model="formData.category_2"
+                                     style="width: 100%;"/>
                             <datalist id="categories_2">
                                 <option v-for="category in categories" :value="category.name" style="color: red"/>
                             </datalist>
@@ -75,10 +78,11 @@
                     </div>
                     <div class="column is-4">
                         <label for="media" class="label">Mídia</label>
-                        <div class="select is-fullwidth" >
-                            <select id="media" v-model="formData.media">
+                        <div class="select is-fullwidth">
+                            <select id="media" v-model="media_id" @change="formData.media = media_id">
                                 <option v-for="m in media" :value="m.id">{{ m.name }}</option>
                             </select>
+                            <p>Selected: {{ formData.media }}</p>
                         </div>
                     </div>
                     <div class="column is-8">
@@ -89,18 +93,18 @@
                             </div>
                         </div>
                     </div>
+                    <div class="column is-full">
+                        <div class="field">
+                            <label for="summary" class="label">Resumo</label>
+                            <div class="control">
+                                <textarea id="summary" class="textarea" v-model="formData.summary"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="columns is-centered">
                     <div class="column is-one-third">
                         <button class="button is-primary is-fullwidth" @click="store">ENVIAR</button>
-                    </div>
-                </div>
-                <div class="column is-full">
-                    <div class="field">
-                        <label for="title" class="label">Resumo</label>
-                        <div class="control">
-                            <textarea class="textarea" placeholder="Normal textarea"></textarea>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -128,13 +132,14 @@ export default {
                 keyword: null,
                 poster: '',
                 summary: '',
-                media: null,
+                media: 0,
                 img_url: '',
                 img_width: 0,
                 img_height: 0,
             },
             imdb: '',
             ac: '',
+            media_id: 0,
         }
     },
     computed: {
@@ -165,6 +170,10 @@ export default {
             this.white = 5 - this.yellow
             this.formData.rating = this.yellow
         },
+
+        /**
+         * Scraping datas from IMDB
+         */
         imdbScraping() {
             this.isLoading = true
             const options1 = {
@@ -181,12 +190,13 @@ export default {
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
-                this.formData.poster = response.data.base.image.url
+                this.formData.img_url = response.data.base.image.url
                 this.formData.img_width = response.data.base.image.width
                 this.formData.img_height = response.data.base.image.height
+                console.log('MEDIA ID', this.formData.media)
 
                 let cast = []
-                for(let i=0; i<10; i++) {
+                for (let i = 0; i < 10; i++) {
                     let actor = response.data.cast[i].name
                     let characters = response.data.cast[i].characters
                     console.log('Characters', i, response.data.cast[i].characters)
@@ -213,24 +223,31 @@ export default {
             };
 
             axios.request(options2).then(response => {
-                for(let i=0; i<this.categories.length; i++) {
-                    if(this.categories[i].e_name === response.data[0]) {
+                for (let i = 0; i < this.categories.length; i++) {
+                    if (this.categories[i].e_name === response.data[0]) {
                         this.formData.category_1 = this.categories[i].name
                     }
-                    if(this.categories[i].e_name === response.data[1]) {
+                    if (this.categories[i].e_name === response.data[1]) {
                         this.formData.category_2 = this.categories[i].name
                     }
                 }
             }).catch(error => console.error(error))
         },
+
         strTime(t) {
             const minute = t % 60
             const hour = Math.floor((t / 60))
             return '0' + hour + ':' + minute
         },
+
+        /**
+         * Send data to store movie.
+         */
         store() {
             axios.post('/api/movies/store', this.formData).then(response => {
+                this.isLoading = true
                 console.log('STORE', response.data)
+                this.isLoading = false
             }).catch(error => console.error(error))
         }
     },
@@ -242,6 +259,6 @@ hr {
     height: 2px;
     border-width: 0;
     color: #000000;
-    background-color:#000000;
+    background-color: #000000;
 }
 </style>
