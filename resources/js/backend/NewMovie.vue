@@ -85,7 +85,7 @@
                         <div class="field-body">
                             <div class="field">
                                 <label for="poster" class="label">Poster URL</label>
-                                <input id="poster" name="imdb" v-model="formData.poster" class="input" type="text">
+                                <input id="poster" name="imdb" v-model="formData.img_url" class="input" type="text">
                             </div>
                         </div>
                     </div>
@@ -129,8 +129,9 @@ export default {
                 poster: '',
                 summary: '',
                 media: null,
+                img_url: '',
                 img_width: 0,
-                img_height: 0
+                img_height: 0,
             },
             imdb: '',
             ac: '',
@@ -177,15 +178,12 @@ export default {
             };
 
             axios.request(options1).then(response => {
-                console.log('RESPONSE', response.data)
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
                 this.formData.poster = response.data.base.image.url
                 this.formData.img_width = response.data.base.image.width
                 this.formData.img_height = response.data.base.image.height
-                console.log('IMG WIDTH', this.formData.img_width)
-                console.log('IMG HEIGHT', this.formData.img_height)
 
                 let cast = []
                 for(let i=0; i<10; i++) {
@@ -223,8 +221,6 @@ export default {
                         this.formData.category_2 = this.categories[i].name
                     }
                 }
-                console.log('Category 1', this.formData.category_1)
-                console.log('Category 2', this.formData.category_2)
             }).catch(error => console.error(error))
         },
         strTime(t) {
