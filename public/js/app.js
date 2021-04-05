@@ -2297,12 +2297,14 @@ __webpack_require__.r(__webpack_exports__);
      * Send data to store movie.
      */
     store: function store() {
-      var _this2 = this;
-
       axios.post('/api/movies/store', this.formData).then(function (response) {
-        _this2.isLoading = true;
+        if (response.status === 200) {
+          console.log('STORE', response.data);
+        } else if (response.status === 202) {
+          alert('O filma já existe');
+        }
+
         console.log('STORE', response.data);
-        _this2.isLoading = false;
       })["catch"](function (error) {
         return console.error(error);
       });

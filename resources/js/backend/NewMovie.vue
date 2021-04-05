@@ -146,9 +146,6 @@ export default {
         categories() {
             return this.$store.getters.getCategories
         },
-        keywords() {
-            return this.$store.getters.getKeywords
-        },
         media() {
             return this.$store.getters.getMedia
         }
@@ -245,9 +242,12 @@ export default {
          */
         store() {
             axios.post('/api/movies/store', this.formData).then(response => {
-                this.isLoading = true
+                if (response.status === 200) {
+                    console.log('STORE', response.data)
+                } else if ((response.status === 202)) {
+                    alert('O filma já existe')
+                }
                 console.log('STORE', response.data)
-                this.isLoading = false
             }).catch(error => console.error(error))
         }
     },

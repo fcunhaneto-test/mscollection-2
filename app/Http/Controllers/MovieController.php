@@ -28,6 +28,10 @@ class MovieController extends Controller
     public function store(Request $request)
     {
         $movie = new Movie();
+        $exist = $movie->where('title', '=', $request->title)->where('year', '=', $request->year)->count();
+        if($exist) {
+            return response()->json(['title' => $request->title], 202);
+        }
         $movie->title = $request->title;
         $movie->original_title = $request->original_title;
         $movie->year = $request->year;
@@ -52,6 +56,6 @@ class MovieController extends Controller
         $media = Media::findOrFail($request->media);
         $movie->media()->attach($media->id, ['active' => true, 'slug' => $media->slug]);
 
-        return response()->json(['media' => $request->media], 200);
+        return response()->json(['title' => $request->title], 200);
     }
 }
