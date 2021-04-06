@@ -39,7 +39,6 @@ class MovieController extends Controller
         $movie->rating = $request->rating;
         $movie->category_1 = $request->category_1;
         $movie->category_2 = $request->category_2;
-        $movie->keyword = $request->keyword;
         $movie->poster = str_replace(' ', '', $request->title) . '-'. $request->year . '.jpg';
         $movie->summary = $request->summary;
 
@@ -56,6 +55,6 @@ class MovieController extends Controller
         $media = Media::findOrFail($request->media);
         $movie->media()->attach($media->id, ['active' => true, 'slug' => $media->slug]);
 
-        return response()->json(['title' => $request->title], 200);
+        return response()->json($movie->id, 200);
     }
 }

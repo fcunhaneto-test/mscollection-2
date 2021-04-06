@@ -4,7 +4,7 @@
             <div class="card is-bordered">
                 <div class="media has-background-black">
                     <div class="media-left p-2">
-                        <img v-if="title.poster" :src="'../images/poster/' + title.poster" width="150" height="203"
+                        <img v-if="title.poster" :src="'../storage/images/posters/' + title.poster" width="150" height="203"
                              alt="poster do filme">
                         <img v-else :src="'../images/poster/faker-poster.png'" width="150" height="203"
                              alt="poster do filme">

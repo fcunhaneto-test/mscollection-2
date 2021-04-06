@@ -69,12 +69,6 @@
                         </b-field>
                     </div>
                     <div class="column is-4">
-                        <b-field label="Keyword" class="form-edit">
-                            <b-input list="keywords" name="category_2" v-model="formData.keyword" style="width: 100%;"/>
-                            <datalist id="keywords">
-                                <option v-for="keyword in keywords" :value="keyword.name" style="color: red"/>
-                            </datalist>
-                        </b-field>
                     </div>
                     <div class="column is-4">
                         <label for="media" class="label">Mídia</label>
@@ -109,6 +103,26 @@
                 </div>
             </div>
         </div>
+        <b-modal v-model="movieSaved" :width="400" :height="400">
+            <div class="card">
+                <div class="card-content">
+                    <div class="content has-text-centered">
+                        <p>Filme Salvo com sucesso</p>
+                        <button class="button is-primary" autofocus @click="movieSaved = false">FECHAR</button>
+                    </div>
+                </div>
+            </div>
+        </b-modal>
+        <b-modal v-model="movieExist" :width="400" :height="400">
+            <div class="card">
+                <div class="card-content">
+                    <div class="content has-text-centered">
+                        <p>Filme já existe</p>
+                        <button class="button is-primary" autofocus @click="movieExist = false">FECHAR</button>
+                    </div>
+                </div>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -119,6 +133,8 @@ export default {
     data() {
         return {
             isLoading: false,
+            movieSaved: false,
+            movieExist: false,
             yellow: 0,
             white: 5,
             formData: {
@@ -129,7 +145,6 @@ export default {
                 rating: 0,
                 category_1: null,
                 category_2: null,
-                keyword: null,
                 poster: '',
                 summary: '',
                 media: 0,
@@ -140,6 +155,8 @@ export default {
             imdb: '',
             ac: '',
             media_id: 0,
+            movie_id: 23,
+            cast: [],
         }
     },
     computed: {
@@ -190,22 +207,23 @@ export default {
                 this.formData.img_url = response.data.base.image.url
                 this.formData.img_width = response.data.base.image.width
                 this.formData.img_height = response.data.base.image.height
-                console.log('MEDIA ID', this.formData.media)
 
-                let cast = []
+                this.cast = []
                 for (let i = 0; i < 10; i++) {
+                    if (!response.data.cast[i].name) {
+                        break
+                    }
                     let actor = response.data.cast[i].name
                     let characters = response.data.cast[i].characters
-                    console.log('Characters', i, response.data.cast[i].characters)
                     let character = ''
                     if (response.data.cast[i].characters.length === 1) {
                         character = response.data.cast[i].characters[0]
                     } else if (response.data.cast[i].characters.length > 1) {
                         character = response.data.cast[i].characters[0] + ' / ' + response.data.cast[i].characters[1]
                     }
-                    cast.push({actor: response.data.cast[i].name, character: character})
+                    this.cast.push({actor: response.data.cast[i].name, character: character})
                 }
-                console.log('CAST', cast)
+                console.log('CAST', this.cast)
                 this.isLoading = false
             }).catch(error => console.error(error))
 
@@ -231,25 +249,41 @@ export default {
             }).catch(error => console.error(error))
         },
 
-        strTime(t) {
-            const minute = t % 60
-            const hour = Math.floor((t / 60))
-            return '0' + hour + ':' + minute
-        },
-
         /**
          * Send data to store movie.
          */
         store() {
             axios.post('/api/movies/store', this.formData).then(response => {
                 if (response.status === 200) {
-                    console.log('STORE', response.data)
+                    this.movieSaved = true
                 } else if ((response.status === 202)) {
-                    alert('O filma já existe')
+                    this.movieExist = true
                 }
-                console.log('STORE', response.data)
+                this.movie_id = parseInt(response.data);
             }).catch(error => console.error(error))
-        }
+
+            const data = JSON.stringify(this.cast)
+            axios.post('/api/cast/store', {
+                cast: data,
+                movie_id: this.movie_id
+            }).then(response => {
+                console.log(response.data)
+            }).catch(error => console.error(error))
+        },
+
+        /**
+         * Covert time im minutes to hour:minutes
+         * @param t
+         * @returns {string}
+         */
+        strTime(t) {
+            const minute = t % 60
+            const hour = Math.floor((t / 60))
+            if(minute < 10) {
+                return '0' + hour + ':0' + minute
+            }
+            return '0' + hour + ':' + minute
+        },
     },
 }
 </script>

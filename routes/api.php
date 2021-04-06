@@ -57,6 +57,6 @@ Route::prefix('categories')->group(function() {
     Route::get('', 'Qualifiers\CategoryController@index') ;
 });
 
-Route::prefix('keywords')->group(function() {
-    Route::get('', 'Qualifiers\KeywordController@index') ;
+Route::prefix('cast')->group(function() {
+    Route::post('/store', 'Cast\CastController@store') ;
 });

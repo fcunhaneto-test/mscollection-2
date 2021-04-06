@@ -54,7 +54,7 @@ return [
 
         'posters' => [
             'driver' => 'local',
-            'root'   => public_path() . 'images',
+            'root'   => storage_path('app/public/images/posters'),
         ],
 
     ],

@@ -21,7 +21,6 @@ class CreateMoviesTable extends Migration
             $table->time('time', 0)->nullable();
             $table->string('category_1', 25)->nullable();
             $table->string('category_2', 25)->nullable();
-            $table->string('keyword', 25)->nullable();
             $table->unsignedTinyInteger('rating')->default(0);
             $table->string('poster')->nullable();
             $table->text('summary')->nullable();
@@ -31,8 +30,6 @@ class CreateMoviesTable extends Migration
             $table->foreign('category_1')->on('categories')->references('name')
                 ->onUpdate('cascade')->onDelete('set null');
             $table->foreign('category_2')->on('categories')->references('name')
-                ->onUpdate('cascade')->onDelete('set null');
-            $table->foreign('keyword')->on('keywords')->references('name')
                 ->onUpdate('cascade')->onDelete('set null');
         });
     }

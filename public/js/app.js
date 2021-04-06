@@ -2153,11 +2153,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "NewMovie",
   data: function data() {
     return {
       isLoading: false,
+      movieSaved: false,
+      movieExist: false,
       yellow: 0,
       white: 5,
       formData: {
@@ -2168,7 +2184,6 @@ __webpack_require__.r(__webpack_exports__);
         rating: 0,
         category_1: null,
         category_2: null,
-        keyword: null,
         poster: '',
         summary: '',
         media: 0,
@@ -2178,15 +2193,14 @@ __webpack_require__.r(__webpack_exports__);
       },
       imdb: '',
       ac: '',
-      media_id: 0
+      media_id: 0,
+      movie_id: 23,
+      cast: []
     };
   },
   computed: {
     categories: function categories() {
       return this.$store.getters.getCategories;
-    },
-    keywords: function keywords() {
-      return this.$store.getters.getKeywords;
     },
     media: function media() {
       return this.$store.getters.getMedia;
@@ -2236,13 +2250,15 @@ __webpack_require__.r(__webpack_exports__);
         _this.formData.img_url = response.data.base.image.url;
         _this.formData.img_width = response.data.base.image.width;
         _this.formData.img_height = response.data.base.image.height;
-        console.log('MEDIA ID', _this.formData.media);
-        var cast = [];
+        _this.cast = [];
 
         for (var i = 0; i < 10; i++) {
+          if (!response.data.cast[i].name) {
+            break;
+          }
+
           var actor = response.data.cast[i].name;
           var characters = response.data.cast[i].characters;
-          console.log('Characters', i, response.data.cast[i].characters);
           var character = '';
 
           if (response.data.cast[i].characters.length === 1) {
@@ -2251,13 +2267,13 @@ __webpack_require__.r(__webpack_exports__);
             character = response.data.cast[i].characters[0] + ' / ' + response.data.cast[i].characters[1];
           }
 
-          cast.push({
+          _this.cast.push({
             actor: response.data.cast[i].name,
             character: character
           });
         }
 
-        console.log('CAST', cast);
+        console.log('CAST', _this.cast);
         _this.isLoading = false;
       })["catch"](function (error) {
         return console.error(error);
@@ -2287,27 +2303,52 @@ __webpack_require__.r(__webpack_exports__);
         return console.error(error);
       });
     },
-    strTime: function strTime(t) {
-      var minute = t % 60;
-      var hour = Math.floor(t / 60);
-      return '0' + hour + ':' + minute;
-    },
 
     /**
      * Send data to store movie.
      */
     store: function store() {
+      var _this2 = this;
+
       axios.post('/api/movies/store', this.formData).then(function (response) {
         if (response.status === 200) {
-          console.log('STORE', response.data);
+          _this2.movieSaved = true;
         } else if (response.status === 202) {
-          alert('O filma já existe');
+          _this2.movieExist = true;
         }
 
-        console.log('STORE', response.data);
+        _this2.movie_id = parseInt(response.data);
+      })["catch"](function (error) {
+        return console.error(error);
+      }); // const data = JSON.stringify(this.cast)
+      // console.log('DATA', {
+      //     data
+      // })
+
+      axios.post('/api/cast/store', {
+        cast: this.cast,
+        movie_id: this.movie_id
+      }).then(function (response) {
+        console.log(response.data);
       })["catch"](function (error) {
         return console.error(error);
       });
+    },
+
+    /**
+     * Covert time im minutes to hour:minutes
+     * @param t
+     * @returns {string}
+     */
+    strTime: function strTime(t) {
+      var minute = t % 60;
+      var hour = Math.floor(t / 60);
+
+      if (minute < 10) {
+        return '0' + hour + ':0' + minute;
+      }
+
+      return '0' + hour + ':' + minute;
     }
   }
 });
@@ -2363,7 +2404,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
- // import TitleShow from "./components/TitleShow";
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "TitlesAdmin",
@@ -2435,11 +2475,6 @@ __webpack_require__.r(__webpack_exports__);
     });
     axios.get('/api/categories').then(function (response) {
       _this2.$store.commit('SET_CATEGORIES', response.data);
-    })["catch"](function (error) {
-      return console.error(error);
-    });
-    axios.get('/api/keywords').then(function (response) {
-      _this2.$store.commit('SET_KEYWORDS', response.data);
     })["catch"](function (error) {
       return console.error(error);
     });
@@ -39812,73 +39847,32 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container is-max-widescreen mt-5" }, [
-    _c("div", { staticClass: "columns is-centered" }, [
-      _c(
-        "div",
-        { staticClass: "column is-four-fifths" },
-        [
-          _c("b-loading", {
-            attrs: { "is-full-page": true, "can-cancel": true },
-            model: {
-              value: _vm.isLoading,
-              callback: function($$v) {
-                _vm.isLoading = $$v
-              },
-              expression: "isLoading"
-            }
-          }),
-          _vm._v(" "),
-          _c("h2", { staticClass: "title is-4" }, [_vm._v("Scrapping From")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "field-body" }, [
-            _c("div", { staticClass: "field" }, [
-              _c("label", { staticClass: "label", attrs: { for: "imdb" } }, [
-                _vm._v("IMDB")
-              ]),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.imdb,
-                    expression: "imdb"
-                  }
-                ],
-                staticClass: "input",
-                attrs: { id: "imdb", name: "imdb", type: "text" },
-                domProps: { value: _vm.imdb },
-                on: {
-                  keyup: function($event) {
-                    if (
-                      !$event.type.indexOf("key") &&
-                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                    ) {
-                      return null
-                    }
-                    return _vm.imdbScraping($event)
-                  },
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.imdb = $event.target.value
-                  }
-                }
-              })
-            ])
-          ]),
-          _vm._v(" "),
-          _c("hr"),
-          _vm._v(" "),
-          _c("h2", { staticClass: "title is-4" }, [_vm._v("Filme Formulário")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "columns is-multiline" }, [
-            _c("div", { staticClass: "column is-half" }, [
+  return _c(
+    "div",
+    { staticClass: "container is-max-widescreen mt-5" },
+    [
+      _c("div", { staticClass: "columns is-centered" }, [
+        _c(
+          "div",
+          { staticClass: "column is-four-fifths" },
+          [
+            _c("b-loading", {
+              attrs: { "is-full-page": true, "can-cancel": true },
+              model: {
+                value: _vm.isLoading,
+                callback: function($$v) {
+                  _vm.isLoading = $$v
+                },
+                expression: "isLoading"
+              }
+            }),
+            _vm._v(" "),
+            _c("h2", { staticClass: "title is-4" }, [_vm._v("Scrapping From")]),
+            _vm._v(" "),
+            _c("div", { staticClass: "field-body" }, [
               _c("div", { staticClass: "field" }, [
-                _c("label", { staticClass: "label", attrs: { for: "title" } }, [
-                  _vm._v("Título")
+                _c("label", { staticClass: "label", attrs: { for: "imdb" } }, [
+                  _vm._v("IMDB")
                 ]),
                 _vm._v(" "),
                 _c("input", {
@@ -39886,340 +39880,47 @@ var render = function() {
                     {
                       name: "model",
                       rawName: "v-model",
-                      value: _vm.formData.title,
-                      expression: "formData.title"
+                      value: _vm.imdb,
+                      expression: "imdb"
                     }
                   ],
                   staticClass: "input",
-                  attrs: { id: "title", name: "title", type: "text" },
-                  domProps: { value: _vm.formData.title },
+                  attrs: { id: "imdb", name: "imdb", type: "text" },
+                  domProps: { value: _vm.imdb },
                   on: {
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      return _vm.imdbScraping($event)
+                    },
                     input: function($event) {
                       if ($event.target.composing) {
                         return
                       }
-                      _vm.$set(_vm.formData, "title", $event.target.value)
+                      _vm.imdb = $event.target.value
                     }
                   }
                 })
               ])
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "column is-half" }, [
-              _c("div", { staticClass: "field" }, [
-                _c(
-                  "label",
-                  { staticClass: "label", attrs: { for: "original_title" } },
-                  [_vm._v("Título Original")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.formData.original_title,
-                      expression: "formData.original_title"
-                    }
-                  ],
-                  staticClass: "input",
-                  attrs: {
-                    id: "original_title",
-                    name: "original_title",
-                    type: "text"
-                  },
-                  domProps: { value: _vm.formData.original_title },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.formData,
-                        "original_title",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ])
+            _c("hr"),
+            _vm._v(" "),
+            _c("h2", { staticClass: "title is-4" }, [
+              _vm._v("Filme Formulário")
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "column is-3" }, [
-              _c("div", { staticClass: "field" }, [
-                _c("label", { staticClass: "label", attrs: { for: "year" } }, [
-                  _vm._v("Ano")
-                ]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.formData.year,
-                      expression: "formData.year"
-                    }
-                  ],
-                  staticClass: "input",
-                  attrs: { id: "year", name: "title", type: "text" },
-                  domProps: { value: _vm.formData.year },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.formData, "year", $event.target.value)
-                    }
-                  }
-                })
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "column is-3" }, [
-              _c("div", { staticClass: "field" }, [
-                _c("label", { staticClass: "label", attrs: { for: "time" } }, [
-                  _vm._v("Tempo")
-                ]),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.formData.time,
-                      expression: "formData.time"
-                    }
-                  ],
-                  staticClass: "input",
-                  attrs: { id: "time", name: "time", type: "time" },
-                  domProps: { value: _vm.formData.time },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(_vm.formData, "time", $event.target.value)
-                    }
-                  }
-                })
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "column is-6" }, [
-              _c(
-                "div",
-                { staticClass: "field" },
-                [
-                  _c("label", { staticClass: "label" }, [_vm._v("Ranking")]),
-                  _vm._v(" "),
-                  _vm._l(_vm.yellow, function(ys) {
-                    return _c(
-                      "a",
-                      {
-                        key: "yellow_" + ys,
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            return _vm.delStar(ys)
-                          }
-                        }
-                      },
-                      [_vm._m(0, true)]
-                    )
-                  }),
-                  _vm._v(" "),
-                  _vm._l(_vm.white, function(ws) {
-                    return _c(
-                      "a",
-                      {
-                        key: "white_" + ws,
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            return _vm.addStar(ws)
-                          }
-                        }
-                      },
-                      [_vm._m(1, true)]
-                    )
-                  })
-                ],
-                2
-              )
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "column is-4" },
-              [
-                _c(
-                  "b-field",
-                  { staticClass: "form-edit", attrs: { label: "Categoria 1" } },
-                  [
-                    _c("b-input", {
-                      staticStyle: { width: "100%" },
-                      attrs: { list: "categories_1", name: "category" },
-                      model: {
-                        value: _vm.formData.category_1,
-                        callback: function($$v) {
-                          _vm.$set(_vm.formData, "category_1", $$v)
-                        },
-                        expression: "formData.category_1"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "datalist",
-                      { attrs: { id: "categories_1" } },
-                      _vm._l(_vm.categories, function(category) {
-                        return _c("option", {
-                          staticStyle: { color: "red" },
-                          domProps: { value: category.name }
-                        })
-                      }),
-                      0
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "column is-4" },
-              [
-                _c(
-                  "b-field",
-                  { staticClass: "form-edit", attrs: { label: "Categoria 2" } },
-                  [
-                    _c("b-input", {
-                      staticStyle: { width: "100%" },
-                      attrs: { list: "categories_2", name: "category" },
-                      model: {
-                        value: _vm.formData.category_2,
-                        callback: function($$v) {
-                          _vm.$set(_vm.formData, "category_2", $$v)
-                        },
-                        expression: "formData.category_2"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "datalist",
-                      { attrs: { id: "categories_2" } },
-                      _vm._l(_vm.categories, function(category) {
-                        return _c("option", {
-                          staticStyle: { color: "red" },
-                          domProps: { value: category.name }
-                        })
-                      }),
-                      0
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "column is-4" },
-              [
-                _c(
-                  "b-field",
-                  { staticClass: "form-edit", attrs: { label: "Keyword" } },
-                  [
-                    _c("b-input", {
-                      staticStyle: { width: "100%" },
-                      attrs: { list: "keywords", name: "category_2" },
-                      model: {
-                        value: _vm.formData.keyword,
-                        callback: function($$v) {
-                          _vm.$set(_vm.formData, "keyword", $$v)
-                        },
-                        expression: "formData.keyword"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "datalist",
-                      { attrs: { id: "keywords" } },
-                      _vm._l(_vm.keywords, function(keyword) {
-                        return _c("option", {
-                          staticStyle: { color: "red" },
-                          domProps: { value: keyword.name }
-                        })
-                      }),
-                      0
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c("div", { staticClass: "column is-4" }, [
-              _c("label", { staticClass: "label", attrs: { for: "media" } }, [
-                _vm._v("Mídia")
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "select is-fullwidth" }, [
-                _c(
-                  "select",
-                  {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.media_id,
-                        expression: "media_id"
-                      }
-                    ],
-                    attrs: { id: "media" },
-                    on: {
-                      change: [
-                        function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.media_id = $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
-                        },
-                        function($event) {
-                          _vm.formData.media = _vm.media_id
-                        }
-                      ]
-                    }
-                  },
-                  _vm._l(_vm.media, function(m) {
-                    return _c("option", { domProps: { value: m.id } }, [
-                      _vm._v(_vm._s(m.name))
-                    ])
-                  }),
-                  0
-                ),
-                _vm._v(" "),
-                _c("p", [_vm._v("Selected: " + _vm._s(_vm.formData.media))])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "column is-8" }, [
-              _c("div", { staticClass: "field-body" }, [
+            _c("div", { staticClass: "columns is-multiline" }, [
+              _c("div", { staticClass: "column is-half" }, [
                 _c("div", { staticClass: "field" }, [
                   _c(
                     "label",
-                    { staticClass: "label", attrs: { for: "poster" } },
-                    [_vm._v("Poster URL")]
+                    { staticClass: "label", attrs: { for: "title" } },
+                    [_vm._v("Título")]
                   ),
                   _vm._v(" "),
                   _c("input", {
@@ -40227,78 +39928,469 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.formData.img_url,
-                        expression: "formData.img_url"
+                        value: _vm.formData.title,
+                        expression: "formData.title"
                       }
                     ],
                     staticClass: "input",
-                    attrs: { id: "poster", name: "imdb", type: "text" },
-                    domProps: { value: _vm.formData.img_url },
+                    attrs: { id: "title", name: "title", type: "text" },
+                    domProps: { value: _vm.formData.title },
                     on: {
                       input: function($event) {
                         if ($event.target.composing) {
                           return
                         }
-                        _vm.$set(_vm.formData, "img_url", $event.target.value)
+                        _vm.$set(_vm.formData, "title", $event.target.value)
                       }
                     }
                   })
                 ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "column is-full" }, [
-              _c("div", { staticClass: "field" }, [
-                _c(
-                  "label",
-                  { staticClass: "label", attrs: { for: "summary" } },
-                  [_vm._v("Resumo")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "control" }, [
-                  _c("textarea", {
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-half" }, [
+                _c("div", { staticClass: "field" }, [
+                  _c(
+                    "label",
+                    { staticClass: "label", attrs: { for: "original_title" } },
+                    [_vm._v("Título Original")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
                     directives: [
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.formData.summary,
-                        expression: "formData.summary"
+                        value: _vm.formData.original_title,
+                        expression: "formData.original_title"
                       }
                     ],
-                    staticClass: "textarea",
-                    attrs: { id: "summary" },
-                    domProps: { value: _vm.formData.summary },
+                    staticClass: "input",
+                    attrs: {
+                      id: "original_title",
+                      name: "original_title",
+                      type: "text"
+                    },
+                    domProps: { value: _vm.formData.original_title },
                     on: {
                       input: function($event) {
                         if ($event.target.composing) {
                           return
                         }
-                        _vm.$set(_vm.formData, "summary", $event.target.value)
+                        _vm.$set(
+                          _vm.formData,
+                          "original_title",
+                          $event.target.value
+                        )
                       }
                     }
                   })
                 ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-3" }, [
+                _c("div", { staticClass: "field" }, [
+                  _c(
+                    "label",
+                    { staticClass: "label", attrs: { for: "year" } },
+                    [_vm._v("Ano")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.formData.year,
+                        expression: "formData.year"
+                      }
+                    ],
+                    staticClass: "input",
+                    attrs: { id: "year", name: "title", type: "text" },
+                    domProps: { value: _vm.formData.year },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.formData, "year", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-3" }, [
+                _c("div", { staticClass: "field" }, [
+                  _c(
+                    "label",
+                    { staticClass: "label", attrs: { for: "time" } },
+                    [_vm._v("Tempo")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.formData.time,
+                        expression: "formData.time"
+                      }
+                    ],
+                    staticClass: "input",
+                    attrs: { id: "time", name: "time", type: "time" },
+                    domProps: { value: _vm.formData.time },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.formData, "time", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-6" }, [
+                _c(
+                  "div",
+                  { staticClass: "field" },
+                  [
+                    _c("label", { staticClass: "label" }, [_vm._v("Ranking")]),
+                    _vm._v(" "),
+                    _vm._l(_vm.yellow, function(ys) {
+                      return _c(
+                        "a",
+                        {
+                          key: "yellow_" + ys,
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              return _vm.delStar(ys)
+                            }
+                          }
+                        },
+                        [_vm._m(0, true)]
+                      )
+                    }),
+                    _vm._v(" "),
+                    _vm._l(_vm.white, function(ws) {
+                      return _c(
+                        "a",
+                        {
+                          key: "white_" + ws,
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              return _vm.addStar(ws)
+                            }
+                          }
+                        },
+                        [_vm._m(1, true)]
+                      )
+                    })
+                  ],
+                  2
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "column is-4" },
+                [
+                  _c(
+                    "b-field",
+                    {
+                      staticClass: "form-edit",
+                      attrs: { label: "Categoria 1" }
+                    },
+                    [
+                      _c("b-input", {
+                        staticStyle: { width: "100%" },
+                        attrs: { list: "categories_1", name: "category" },
+                        model: {
+                          value: _vm.formData.category_1,
+                          callback: function($$v) {
+                            _vm.$set(_vm.formData, "category_1", $$v)
+                          },
+                          expression: "formData.category_1"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "datalist",
+                        { attrs: { id: "categories_1" } },
+                        _vm._l(_vm.categories, function(category) {
+                          return _c("option", {
+                            staticStyle: { color: "red" },
+                            domProps: { value: category.name }
+                          })
+                        }),
+                        0
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "column is-4" },
+                [
+                  _c(
+                    "b-field",
+                    {
+                      staticClass: "form-edit",
+                      attrs: { label: "Categoria 2" }
+                    },
+                    [
+                      _c("b-input", {
+                        staticStyle: { width: "100%" },
+                        attrs: { list: "categories_2", name: "category" },
+                        model: {
+                          value: _vm.formData.category_2,
+                          callback: function($$v) {
+                            _vm.$set(_vm.formData, "category_2", $$v)
+                          },
+                          expression: "formData.category_2"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "datalist",
+                        { attrs: { id: "categories_2" } },
+                        _vm._l(_vm.categories, function(category) {
+                          return _c("option", {
+                            staticStyle: { color: "red" },
+                            domProps: { value: category.name }
+                          })
+                        }),
+                        0
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-4" }),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-4" }, [
+                _c("label", { staticClass: "label", attrs: { for: "media" } }, [
+                  _vm._v("Mídia")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "select is-fullwidth" }, [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.media_id,
+                          expression: "media_id"
+                        }
+                      ],
+                      attrs: { id: "media" },
+                      on: {
+                        change: [
+                          function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.media_id = $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          },
+                          function($event) {
+                            _vm.formData.media = _vm.media_id
+                          }
+                        ]
+                      }
+                    },
+                    _vm._l(_vm.media, function(m) {
+                      return _c("option", { domProps: { value: m.id } }, [
+                        _vm._v(_vm._s(m.name))
+                      ])
+                    }),
+                    0
+                  ),
+                  _vm._v(" "),
+                  _c("p", [_vm._v("Selected: " + _vm._s(_vm.formData.media))])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-8" }, [
+                _c("div", { staticClass: "field-body" }, [
+                  _c("div", { staticClass: "field" }, [
+                    _c(
+                      "label",
+                      { staticClass: "label", attrs: { for: "poster" } },
+                      [_vm._v("Poster URL")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.formData.img_url,
+                          expression: "formData.img_url"
+                        }
+                      ],
+                      staticClass: "input",
+                      attrs: { id: "poster", name: "imdb", type: "text" },
+                      domProps: { value: _vm.formData.img_url },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.formData, "img_url", $event.target.value)
+                        }
+                      }
+                    })
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-full" }, [
+                _c("div", { staticClass: "field" }, [
+                  _c(
+                    "label",
+                    { staticClass: "label", attrs: { for: "summary" } },
+                    [_vm._v("Resumo")]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "control" }, [
+                    _c("textarea", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.formData.summary,
+                          expression: "formData.summary"
+                        }
+                      ],
+                      staticClass: "textarea",
+                      attrs: { id: "summary" },
+                      domProps: { value: _vm.formData.summary },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(_vm.formData, "summary", $event.target.value)
+                        }
+                      }
+                    })
+                  ])
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "columns is-centered" }, [
+              _c("div", { staticClass: "column is-one-third" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "button is-primary is-fullwidth",
+                    on: { click: _vm.store }
+                  },
+                  [_vm._v("ENVIAR")]
+                )
               ])
             ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "columns is-centered" }, [
-            _c("div", { staticClass: "column is-one-third" }, [
-              _c(
-                "button",
-                {
-                  staticClass: "button is-primary is-fullwidth",
-                  on: { click: _vm.store }
-                },
-                [_vm._v("ENVIAR")]
-              )
+          ],
+          1
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "b-modal",
+        {
+          attrs: { width: 400, height: 400 },
+          model: {
+            value: _vm.movieSaved,
+            callback: function($$v) {
+              _vm.movieSaved = $$v
+            },
+            expression: "movieSaved"
+          }
+        },
+        [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-content" }, [
+              _c("div", { staticClass: "content has-text-centered" }, [
+                _c("p", [_vm._v("Filme Salvo com sucesso")]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "button is-primary",
+                    attrs: { autofocus: "" },
+                    on: {
+                      click: function($event) {
+                        _vm.movieSaved = false
+                      }
+                    }
+                  },
+                  [_vm._v("FECHAR")]
+                )
+              ])
             ])
           ])
-        ],
-        1
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "b-modal",
+        {
+          attrs: { width: 400, height: 400 },
+          model: {
+            value: _vm.movieExist,
+            callback: function($$v) {
+              _vm.movieExist = $$v
+            },
+            expression: "movieExist"
+          }
+        },
+        [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-content" }, [
+              _c("div", { staticClass: "content has-text-centered" }, [
+                _c("p", [_vm._v("Filme já existe")]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "button is-primary",
+                    attrs: { autofocus: "" },
+                    on: {
+                      click: function($event) {
+                        _vm.movieExist = false
+                      }
+                    }
+                  },
+                  [_vm._v("FECHAR")]
+                )
+              ])
+            ])
+          ])
+        ]
       )
-    ])
-  ])
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -40826,7 +40918,7 @@ var render = function() {
             _vm.title.poster
               ? _c("img", {
                   attrs: {
-                    src: "../images/poster/" + _vm.title.poster,
+                    src: "../storage/images/posters/" + _vm.title.poster,
                     width: "150",
                     height: "203",
                     alt: "poster do filme"

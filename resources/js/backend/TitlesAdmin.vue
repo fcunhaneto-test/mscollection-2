@@ -36,7 +36,6 @@
 <script>
 import TitlesTable from "./components/TitlesAdminTable";
 import TitlesPaginate from "./components/TitlesAdminPaginate";
-// import TitleShow from "./components/TitleShow";
 
 export default {
     name: "TitlesAdmin",
@@ -98,9 +97,6 @@ export default {
         }).catch(error => console.error(error))
         axios.get('/api/categories').then(response => {
             this.$store.commit('SET_CATEGORIES', response.data)
-        }).catch(error => console.error(error))
-        axios.get('/api/keywords').then(response => {
-            this.$store.commit('SET_KEYWORDS', response.data)
         }).catch(error => console.error(error))
     }
 }
