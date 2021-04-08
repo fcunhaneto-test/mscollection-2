@@ -18,7 +18,6 @@ class CreateSeriesUserTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedTinyInteger('rating');
             $table->text('comment');
-            $table->softDeletes();
 
             $table->primary(['series_id', 'user_id']);
 

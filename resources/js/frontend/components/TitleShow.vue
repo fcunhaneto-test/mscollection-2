@@ -6,7 +6,7 @@
                     <div class="media-left p-2">
                         <img v-if="title.poster" :src="'../storage/images/posters/' + title.poster" width="150" height="203"
                              alt="poster do filme">
-                        <img v-else :src="'../images/poster/faker-poster.png'" width="150" height="203"
+                        <img v-else :src="'../storage/images/posters/faker-poster.png'" width="150" height="203"
                              alt="poster do filme">
                     </div>
                     <div class="media-content">
@@ -14,23 +14,30 @@
                         <p>
                             <span class="tag is-light">Ano: {{ title.year }}</span>
                             <span class="tag is-light">Duração: {{ title.time | strTime }}</span>
-                            <span class="tag is-light">
-                                <i v-for="i in title.rating" class="fas fa-star has-text-orange"></i>
-                                <i v-for="i in (5-title.rating)" class="far fa-star"></i>
+                        </p>
+                        <p class="mt-3">
+                            <span class="tag is-info">
+                                <span class="mr-2">imdb</span>
+                                <i v-for="i in title.imdb_rating" class="fas fa-star has-text-orange"></i>
+                                <i v-for="i in (5-title.imdb_rating)" class="far fa-star"></i>
+                            </span>
+                            <span class="tag is-info">
+                                <span class="mr-2">nossa</span>
+                                <i v-for="i in title.our_rating" class="fas fa-star has-text-orange"></i>
+                                <i v-for="i in (5-title.our_rating)" class="far fa-star"></i>
                             </span>
                         </p>
                         <p class="mt-3">
-                            <span v-if="title.category_2" class="tag is-link">Categorias: {{ title.category_1 }},
+                            <span v-if="title.category_2" class="tag is-success">Categorias: {{ title.category_1 }},
                                     {{ title.category_2 }}</span>
-                            <span v-else class="tag is-link">Categorias: {{ title.category_1 }}</span>
+                            <span v-else class="tag is-success">Categorias: {{ title.category_1 }}</span>
                         </p>
                     </div>
                     <div class="media-right">
                         <div class="column">
-                            <button class="button is-light is-small has-tooltip-bottom mr-2 ml-2" data-tooltip="Voltar"
-                                    @click="viewTable">
-                                <i class="fas fa-undo-alt"></i>
-                            </button>
+                            <b-tooltip label="Retornar">
+                                <b-button type="is-dark" @click="viewTable"><i class="fas fa-undo-alt"></i></b-button>
+                            </b-tooltip>
                         </div>
                     </div>
                 </div>

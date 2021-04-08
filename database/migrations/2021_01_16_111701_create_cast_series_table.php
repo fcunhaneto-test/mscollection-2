@@ -17,7 +17,7 @@ class CreateCastSeriesTable extends Migration
             $table->unsignedInteger('cast_id');
             $table->unsignedInteger('series_id');
             $table->unsignedTinyInteger('order')->default(1);
-            $table->softDeletes();
+            $table->boolean('star')->default(false);
 
             $table->primary(['cast_id', 'series_id']);
 

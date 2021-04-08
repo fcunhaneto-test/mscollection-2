@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Cast\Cast;
 use App\Models\Qualifiers\Media;
 use App\Models\Producers\Creator;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Series extends Model
 {
-    use SoftDeletes, CascadeSoftDeletes;
-
     protected $table = 'series';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
-    protected $cascadeDeletes = ['seasons'];
+
+    protected $fillable = [
+        'title', 'original_title', 'year', 'category_1', 'category_2','our_rating', 'imdb_rating',
+        'poster', 'summary'
+    ];
 
     public function media()
     {
@@ -26,6 +26,11 @@ class Series extends Model
     public function creators()
     {
         return $this->belongsToMany(Creator::class)->withPivot('order');
+    }
+
+    public function cast()
+    {
+        return $this->belongsToMany(Cast::class, 'cast_series')->withPivot('order', 'star');
     }
 
     public function seasons()
@@ -53,7 +58,7 @@ class Series extends Model
         return $series;
     }
 
-    public function cast($id)
+    public function castTitle($id)
     {
         return DB::table('cast_series')
             ->leftJoin('cast', 'cast_series.cast_id', '=', 'cast.id')

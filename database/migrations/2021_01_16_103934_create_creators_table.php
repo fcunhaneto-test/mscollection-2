@@ -16,7 +16,6 @@ class CreateCreatorsTable extends Migration
         Schema::create('creators', function (Blueprint $table) {
             $table->unsignedInteger('id', 1);
             $table->string('name', 45)->unique();
-            $table->softDeletes();
         });
     }
 

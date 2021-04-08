@@ -16,7 +16,6 @@ class CreateDirectorsTable extends Migration
         Schema::create('directors', function (Blueprint $table) {
             $table->unsignedInteger('id', 1);
             $table->string('name', 45)->unique();
-            $table->softDeletes();
         });
     }
 

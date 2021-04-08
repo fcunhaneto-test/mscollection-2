@@ -17,7 +17,6 @@ class CreateCategoriesTable extends Migration
             $table->unsignedTinyInteger('id', 1);
             $table->string('name', 25)->unique();
             $table->string('e_name', 25)->unique();
-            $table->softDeletes();
         });
     }
 

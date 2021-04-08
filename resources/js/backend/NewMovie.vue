@@ -41,7 +41,7 @@
                     </div>
                     <div class="column is-6">
                         <div class="field">
-                            <label class="label">Ranking</label>
+                            <label class="label">Rating</label>
                             <a v-for="ys in yellow" href="#" :key="'yellow_' + ys" @click="delStar(ys)">
                                 <span class="icon has-text-orange"><i class="fas fa-star"></i></span>
                             </a>
@@ -50,56 +50,85 @@
                             </a>
                         </div>
                     </div>
-                    <div class="column is-4">
-                        <b-field label="Categoria 1" class="form-edit">
-                            <b-input list="categories_1" name="category" v-model="formData.category_1"
-                                     style="width: 100%;"/>
-                            <datalist id="categories_1">
-                                <option v-for="category in categories" :value="category.name" style="color: red"/>
-                            </datalist>
-                        </b-field>
-                    </div>
-                    <div class="column is-4">
-                        <b-field label="Categoria 2" class="form-edit">
-                            <b-input list="categories_2" name="category" v-model="formData.category_2"
-                                     style="width: 100%;"/>
-                            <datalist id="categories_2">
-                                <option v-for="category in categories" :value="category.name" style="color: red"/>
-                            </datalist>
-                        </b-field>
-                    </div>
-                    <div class="column is-4">
-                    </div>
-                    <div class="column is-4">
-                        <label for="media" class="label">Mídia</label>
-                        <div class="select is-fullwidth">
-                            <select id="media" v-model="media_id" @change="formData.media = media_id">
-                                <option v-for="m in media" :value="m.id">{{ m.name }}</option>
-                            </select>
-                            <p>Selected: {{ formData.media }}</p>
+                </div>
+                <div class="column is-half">
+                    <b-field label="Categoria 1" class="form-edit">
+                        <b-input list="categories_1" name="category" v-model="formData.category_1"
+                                 style="width: 100%;"/>
+                        <datalist id="categories_1">
+                            <option v-for="category in categories" :value="category.name" style="color: red"/>
+                        </datalist>
+                    </b-field>
+                </div>
+                <div class="column is-half">
+                    <b-field label="Categoria 2" class="form-edit">
+                        <b-input list="categories_2" name="category" v-model="formData.category_2"
+                                 style="width: 100%;"/>
+                        <datalist id="categories_2">
+                            <option v-for="category in categories" :value="category.name" style="color: red"/>
+                        </datalist>
+                    </b-field>
+                </div>
+                <div class="column is-12">
+                    <label class="label">Mídia</label>
+                    <div class="columns is-multiline">
+                        <div v-for="m in media" class="column is-3">
+                            <input :id="m.slug" type="checkbox" :value="m.id" v-model="formData.media">
+                            <label :for="m.slug">{{ m.name }}</label>
                         </div>
                     </div>
-                    <div class="column is-8">
-                        <div class="field-body">
-                            <div class="field">
-                                <label for="poster" class="label">Poster URL</label>
-                                <input id="poster" name="imdb" v-model="formData.img_url" class="input" type="text">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column is-full">
+                    <br>
+                </div>
+                <div class="column is-8">
+                    <div class="field-body">
                         <div class="field">
-                            <label for="summary" class="label">Resumo</label>
-                            <div class="control">
-                                <textarea id="summary" class="textarea" v-model="formData.summary"></textarea>
-                            </div>
+                            <label for="poster" class="label">Poster URL</label>
+                            <input id="poster" name="imdb" v-model="formData.img_url" class="input" type="text">
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-full">
+                    <div class="field">
+                        <label for="summary" class="label">Resumo</label>
+                        <div class="control">
+                            <textarea id="summary" class="textarea" v-model="formData.summary"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="columns is-centered">
                     <div class="column is-one-third">
-                        <button class="button is-primary is-fullwidth" @click="store">ENVIAR</button>
+                        <button class="button is-primary is-fullwidth" @click="saveMovie">ENVIAR</button>
                     </div>
+                    <div class="column is-narrow"></div>
+                </div>
+                <hr>
+                <h2 class="title is-4">Elenco</h2>
+                <div class="column is-12">
+                    <table v-if="cast" class="table is-fullwidth">
+                        <thead>
+                        <tr>
+                            <th scope="col">Ator</th>
+                            <th scope="col">Personagem</th>
+                            <th scope="col">Estrela</th>
+                            <th scope="col">Ordem</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(ac, i) in cast" :key="i">
+                            <td>{{ ac.actor }}</td>
+                            <td>{{ ac.character }}</td>
+                            <td><input type="checkbox" v-model="ac.star"></td>
+                            <td><input type="number" name="order" class="input is-small" v-model="ac.order"></input>
+                            </td>
+                            <td>
+                                <button class="button is-link is-small" :disabled="ac.saved" @click="saveCast(cast[i])">
+                                    salvar
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -137,26 +166,27 @@ export default {
             movieExist: false,
             yellow: 0,
             white: 5,
+            w_imdb: 5,
             formData: {
                 title: '',
                 original_title: '',
                 year: 1900,
                 time: '00:00',
-                rating: 0,
+                our_rating: 0,
+                imdb_rating: false,
                 category_1: null,
                 category_2: null,
                 poster: '',
                 summary: '',
-                media: 0,
+                media: [],
                 img_url: '',
                 img_width: 0,
                 img_height: 0,
             },
             imdb: '',
-            ac: '',
-            media_id: 0,
-            movie_id: 23,
+            movie_id: 0,
             cast: [],
+            directors: [],
         }
     },
     computed: {
@@ -182,7 +212,7 @@ export default {
             console.log('ADD', ws)
             this.yellow += ws
             this.white = 5 - this.yellow
-            this.formData.rating = this.yellow
+            this.formData.our_rating = this.yellow
         },
 
         /**
@@ -201,6 +231,7 @@ export default {
             };
 
             axios.request(options1).then(response => {
+                console.log('IMDB', response.data)
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
@@ -208,22 +239,29 @@ export default {
                 this.formData.img_width = response.data.base.image.width
                 this.formData.img_height = response.data.base.image.height
 
-                this.cast = []
                 for (let i = 0; i < 10; i++) {
                     if (!response.data.cast[i].name) {
                         break
                     }
-                    let actor = response.data.cast[i].name
-                    let characters = response.data.cast[i].characters
+                    let order = i + 1
                     let character = ''
                     if (response.data.cast[i].characters.length === 1) {
                         character = response.data.cast[i].characters[0]
                     } else if (response.data.cast[i].characters.length > 1) {
                         character = response.data.cast[i].characters[0] + ' / ' + response.data.cast[i].characters[1]
                     }
-                    this.cast.push({actor: response.data.cast[i].name, character: character})
+                    this.cast.push({
+                        actor: response.data.cast[i].name,
+                        character: character,
+                        star: false,
+                        order: order,
+                        saved: false
+                    })
                 }
-                console.log('CAST', this.cast)
+                let director = response.data.crew.director
+                for (let i = 0; i < director.length; i++) {
+                    this.directors.push(director[i].name)
+                }
                 this.isLoading = false
             }).catch(error => console.error(error))
 
@@ -247,28 +285,57 @@ export default {
                     }
                 }
             }).catch(error => console.error(error))
+
+            const options3 = {
+                method: 'GET',
+                url: 'https://imdb8.p.rapidapi.com/title/get-ratings',
+                params: {tconst: this.imdb},
+                headers: {
+                    'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
+                    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
+                }
+            };
+
+            axios.request(options3).then(response => {
+                this.formData.imdb_rating = Math.round((response.data.rating / 2))
+            }).catch(function (error) {
+                console.error(error);
+            });
         },
 
         /**
          * Send data to store movie.
          */
-        store() {
+        saveMovie() {
             axios.post('/api/movies/store', this.formData).then(response => {
                 if (response.status === 200) {
+                    this.movie_id = parseInt(response.data);
                     this.movieSaved = true
                 } else if ((response.status === 202)) {
                     this.movieExist = true
                 }
-                this.movie_id = parseInt(response.data);
-            }).catch(error => console.error(error))
+            }).catch(error => {
+                this.isLoading = false
+                console.error(error)
+            })
+        },
 
-            const data = JSON.stringify(this.cast)
-            axios.post('/api/cast/store', {
-                cast: data,
-                movie_id: this.movie_id
-            }).then(response => {
-                console.log(response.data)
-            }).catch(error => console.error(error))
+        saveCast(c) {
+            if(this.movie_id) {
+                axios.post('/api/cast/store', {
+                    actor: c.actor,
+                    character: c.character,
+                    order: c.order,
+                    star: c.star,
+                    movie_id: this.movie_id
+                }).then(response => {
+                    if(response.status === 200) {
+                        c.saved = true
+                    }
+                }).catch(error => {
+                    console.error(error)
+                })
+            }
         },
 
         /**
@@ -279,7 +346,7 @@ export default {
         strTime(t) {
             const minute = t % 60
             const hour = Math.floor((t / 60))
-            if(minute < 10) {
+            if (minute < 10) {
                 return '0' + hour + ':0' + minute
             }
             return '0' + hour + ':' + minute

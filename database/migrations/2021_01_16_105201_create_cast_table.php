@@ -17,8 +17,6 @@ class CreateCastTable extends Migration
             $table->unsignedInteger('id', 1);
             $table->unsignedInteger('actor_id');
             $table->unsignedInteger('character_id');
-            $table->unsignedTinyInteger('order')->default(1);
-            $table->softDeletes();
 
             $table->unique(['actor_id', 'character_id']);
 

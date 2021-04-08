@@ -18,7 +18,6 @@ class CreateMediaSeasonTable extends Migration
             $table->unsignedInteger('season_id');
             $table->boolean('active')->default(true);
             $table->string('slug', 25);
-            $table->softDeletes();
 
             $table->primary(['media_id', 'season_id']);
 

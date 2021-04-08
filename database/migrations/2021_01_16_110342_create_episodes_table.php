@@ -19,8 +19,7 @@ class CreateEpisodesTable extends Migration
             $table->unsignedTinyInteger('episode');
             $table->string('title')->nullable();
             $table->string('original_title')->nullable();
-            $table->text('synopsis')->nullable();
-            $table->softDeletes();
+            $table->text('summary')->nullable();
 
             $table->unique(['season_id', 'episode']);
             $table->foreign('season_id')->on('seasons')->references('id')

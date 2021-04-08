@@ -18,7 +18,6 @@ class CreateMediaSeriesTable extends Migration
             $table->unsignedInteger('series_id');
             $table->boolean('active')->default(true);
             $table->string('slug', 25);
-            $table->softDeletes();
 
             $table->primary(['media_id', 'series_id']);
 

@@ -18,7 +18,6 @@ class CreateSeasonsTable extends Migration
             $table->unsignedInteger('series_id');
             $table->unsignedTinyInteger('season');
             $table->string('year', 4);
-            $table->softDeletes();
 
             $table->unique(['series_id', 'season']);
             $table->foreign('series_id')->on('series')->references('id')

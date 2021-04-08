@@ -18,7 +18,6 @@ class CreateMovieUserTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedTinyInteger('rating');
             $table->text('comment')->nullable();
-            $table->softDeletes();
 
             $table->primary(['movie_id', 'user_id']);
 

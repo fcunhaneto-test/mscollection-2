@@ -16,7 +16,6 @@ class CreateCharactersTable extends Migration
         Schema::create('characters', function (Blueprint $table) {
             $table->unsignedInteger('id', 1);
             $table->string('name', 45)->unique();
-            $table->softDeletes();
         });
     }
 

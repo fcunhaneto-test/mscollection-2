@@ -17,7 +17,6 @@ class CreateDirectorMovieTable extends Migration
             $table->unsignedInteger('director_id');
             $table->unsignedInteger('movie_id');
             $table->unsignedTinyInteger('order')->default(1);
-            $table->softDeletes();
 
             $table->primary(['director_id', 'movie_id']);
 

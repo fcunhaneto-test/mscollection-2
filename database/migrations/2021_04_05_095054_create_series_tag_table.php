@@ -14,8 +14,15 @@ class CreateSeriesTagTable extends Migration
     public function up()
     {
         Schema::create('series_tag', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->unsignedInteger('series_id');
+            $table->unsignedInteger('tag_id');
+
+            $table->primary(['series_id', 'tag_id']);
+
+            $table->foreign('series_id')->on('series')->references('id')
+                ->onDelete('cascade');
+            $table->foreign('tag_id')->on('tags')->references('id')
+                ->onDelete('cascade');
         });
     }
 

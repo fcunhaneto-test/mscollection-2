@@ -6,15 +6,13 @@ use App\Models\Movie;
 use App\Models\Series;
 use App\Models\Season;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Media extends Model
 {
-    use SoftDeletes;
-
     protected $table = 'media';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
+
+    protected $fillable = ['name'];
 
     public function movies()
     {

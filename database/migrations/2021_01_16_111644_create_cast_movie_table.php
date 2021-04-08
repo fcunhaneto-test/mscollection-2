@@ -17,7 +17,7 @@ class CreateCastMovieTable extends Migration
             $table->unsignedInteger('cast_id');
             $table->unsignedInteger('movie_id');
             $table->unsignedTinyInteger('order')->default(1);
-            $table->softDeletes();
+            $table->boolean('star')->default(false);
 
             $table->primary(['cast_id', 'movie_id']);
 

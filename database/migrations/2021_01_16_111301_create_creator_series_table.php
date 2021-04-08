@@ -17,7 +17,6 @@ class CreateCreatorSeriesTable extends Migration
             $table->unsignedInteger('creator_id');
             $table->unsignedInteger('series_id');
             $table->unsignedTinyInteger('order')->default(1);
-            $table->softDeletes();
 
             $table->primary(['creator_id', 'series_id']);
 

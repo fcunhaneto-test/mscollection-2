@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Episode extends Model
 {
-    use SoftDeletes;
-
     protected $table = 'episodes';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
+
+    protected $fillable = ['season_id', 'episode', 'title', 'original_title', 'summary'];
 
     public function seasons()
     {

@@ -70,9 +70,9 @@ trait TitlesController
         }
     }
 
-    public function cast($id)
+    public function castTitle($id)
     {
-        return $this->table->cast($id);
+        return $this->table->castTitle($id);
     }
 
     public function producers($id) {

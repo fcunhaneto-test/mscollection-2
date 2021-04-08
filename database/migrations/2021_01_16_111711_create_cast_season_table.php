@@ -17,7 +17,7 @@ class CreateCastSeasonTable extends Migration
             $table->unsignedInteger('cast_id');
             $table->unsignedInteger('season_id');
             $table->unsignedTinyInteger('order')->default(1);
-            $table->softDeletes();
+            $table->boolean('star')->default(false);
 
             $table->primary(['cast_id', 'season_id']);
 

@@ -3,18 +3,14 @@
 namespace App\Models;
 
 use App\Models\Qualifiers\Media;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Season extends Model
 {
-    use SoftDeletes, CascadeSoftDeletes;
-
     protected $table = 'seasons';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
-    protected $cascadeDeletes = ['episodes'];
+
+    protected $fillable = ['series_id', 'season', 'year'];
 
     public function media()
     {

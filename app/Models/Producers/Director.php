@@ -3,18 +3,16 @@
 namespace App\Models\Producers;
 
 use App\Models\Movie;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Director extends Model
 {
-    use SoftDeletes, CascadeSoftDeletes;
-
-    protected $table = 'creators';
+    protected $table = 'directors';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
-    protected $cascadeDeletes = ['director_movie'];
+
+    protected $fillable = [
+        'name',
+    ];
 
     public function movies()
     {

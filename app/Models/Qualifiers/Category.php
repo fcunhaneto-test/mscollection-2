@@ -8,5 +8,6 @@ class Category extends Model
 {
     protected $table = 'categories';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
+
+    protected $fillable = ['name'];
 }

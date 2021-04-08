@@ -36,7 +36,8 @@ class MovieController extends Controller
         $movie->original_title = $request->original_title;
         $movie->year = $request->year;
         $movie->time = $request->time;
-        $movie->rating = $request->rating;
+        $movie->our_rating = $request->our_rating;
+        $movie->imdb_rating = $request->imdb_rating;
         $movie->category_1 = $request->category_1;
         $movie->category_2 = $request->category_2;
         $movie->poster = str_replace(' ', '', $request->title) . '-'. $request->year . '.jpg';
@@ -52,8 +53,13 @@ class MovieController extends Controller
         curl_close($ch);
         Storage::disk('posters')->put($movie->poster, $result);
 
-        $media = Media::findOrFail($request->media);
-        $movie->media()->attach($media->id, ['active' => true, 'slug' => $media->slug]);
+        $media_id = $request->media;
+
+        for($i = 0; $i < count($media_id); $i++) {
+            $media = Media::findOrFail($media_id[$i]);
+            $movie->media()->attach($media->id, ['active' => true, 'slug' => $media->slug]);
+        }
+
 
         return response()->json($movie->id, 200);
     }

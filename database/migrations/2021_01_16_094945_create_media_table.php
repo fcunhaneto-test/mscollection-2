@@ -19,7 +19,6 @@ class CreateMediaTable extends Migration
             $table->string('slug', 25)->unique();
             $table->boolean('active')->default(true);
             $table->boolean('stream')->default(false);
-            $table->softDeletes();
         });
     }
 

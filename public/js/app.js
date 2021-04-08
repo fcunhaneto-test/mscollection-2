@@ -2167,6 +2167,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "NewMovie",
   data: function data() {
@@ -2176,26 +2205,27 @@ __webpack_require__.r(__webpack_exports__);
       movieExist: false,
       yellow: 0,
       white: 5,
+      w_imdb: 5,
       formData: {
         title: '',
         original_title: '',
         year: 1900,
         time: '00:00',
-        rating: 0,
+        our_rating: 0,
+        imdb_rating: false,
         category_1: null,
         category_2: null,
         poster: '',
         summary: '',
-        media: 0,
+        media: [],
         img_url: '',
         img_width: 0,
         img_height: 0
       },
       imdb: '',
-      ac: '',
-      media_id: 0,
-      movie_id: 23,
-      cast: []
+      movie_id: 0,
+      cast: [],
+      directors: []
     };
   },
   computed: {
@@ -2222,7 +2252,7 @@ __webpack_require__.r(__webpack_exports__);
       console.log('ADD', ws);
       this.yellow += ws;
       this.white = 5 - this.yellow;
-      this.formData.rating = this.yellow;
+      this.formData.our_rating = this.yellow;
     },
 
     /**
@@ -2244,21 +2274,20 @@ __webpack_require__.r(__webpack_exports__);
         }
       };
       axios.request(options1).then(function (response) {
+        console.log('IMDB', response.data);
         _this.formData.original_title = response.data.base.title;
         _this.formData.year = response.data.base.year;
         _this.formData.time = _this.strTime(response.data.base.runningTimeInMinutes);
         _this.formData.img_url = response.data.base.image.url;
         _this.formData.img_width = response.data.base.image.width;
         _this.formData.img_height = response.data.base.image.height;
-        _this.cast = [];
 
         for (var i = 0; i < 10; i++) {
           if (!response.data.cast[i].name) {
             break;
           }
 
-          var actor = response.data.cast[i].name;
-          var characters = response.data.cast[i].characters;
+          var order = i + 1;
           var character = '';
 
           if (response.data.cast[i].characters.length === 1) {
@@ -2269,11 +2298,19 @@ __webpack_require__.r(__webpack_exports__);
 
           _this.cast.push({
             actor: response.data.cast[i].name,
-            character: character
+            character: character,
+            star: false,
+            order: order,
+            saved: false
           });
         }
 
-        console.log('CAST', _this.cast);
+        var director = response.data.crew.director;
+
+        for (var _i = 0; _i < director.length; _i++) {
+          _this.directors.push(director[_i].name);
+        }
+
         _this.isLoading = false;
       })["catch"](function (error) {
         return console.error(error);
@@ -2302,37 +2339,58 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         return console.error(error);
       });
+      var options3 = {
+        method: 'GET',
+        url: 'https://imdb8.p.rapidapi.com/title/get-ratings',
+        params: {
+          tconst: this.imdb
+        },
+        headers: {
+          'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
+          'x-rapidapi-host': 'imdb8.p.rapidapi.com'
+        }
+      };
+      axios.request(options3).then(function (response) {
+        _this.formData.imdb_rating = Math.round(response.data.rating / 2);
+      })["catch"](function (error) {
+        console.error(error);
+      });
     },
 
     /**
      * Send data to store movie.
      */
-    store: function store() {
+    saveMovie: function saveMovie() {
       var _this2 = this;
 
       axios.post('/api/movies/store', this.formData).then(function (response) {
         if (response.status === 200) {
+          _this2.movie_id = parseInt(response.data);
           _this2.movieSaved = true;
         } else if (response.status === 202) {
           _this2.movieExist = true;
         }
-
-        _this2.movie_id = parseInt(response.data);
       })["catch"](function (error) {
-        return console.error(error);
-      }); // const data = JSON.stringify(this.cast)
-      // console.log('DATA', {
-      //     data
-      // })
-
-      axios.post('/api/cast/store', {
-        cast: this.cast,
-        movie_id: this.movie_id
-      }).then(function (response) {
-        console.log(response.data);
-      })["catch"](function (error) {
-        return console.error(error);
+        _this2.isLoading = false;
+        console.error(error);
       });
+    },
+    saveCast: function saveCast(c) {
+      if (this.movie_id) {
+        axios.post('/api/cast/store', {
+          actor: c.actor,
+          character: c.character,
+          order: c.order,
+          star: c.star,
+          movie_id: this.movie_id
+        }).then(function (response) {
+          if (response.status === 200) {
+            c.saved = true;
+          }
+        })["catch"](function (error) {
+          console.error(error);
+        });
+      }
     },
 
     /**
@@ -2602,6 +2660,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "TitlesTable",
   computed: {
@@ -2819,6 +2883,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 // TODO Melhorar o retorno para volte na mesma página
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "TitleShow",
@@ -2959,6 +3030,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -40056,7 +40133,7 @@ var render = function() {
                   "div",
                   { staticClass: "field" },
                   [
-                    _c("label", { staticClass: "label" }, [_vm._v("Ranking")]),
+                    _c("label", { staticClass: "label" }, [_vm._v("Rating")]),
                     _vm._v(" "),
                     _vm._l(_vm.yellow, function(ys) {
                       return _c(
@@ -40092,208 +40169,214 @@ var render = function() {
                   ],
                   2
                 )
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "column is-4" },
-                [
-                  _c(
-                    "b-field",
-                    {
-                      staticClass: "form-edit",
-                      attrs: { label: "Categoria 1" }
-                    },
-                    [
-                      _c("b-input", {
-                        staticStyle: { width: "100%" },
-                        attrs: { list: "categories_1", name: "category" },
-                        model: {
-                          value: _vm.formData.category_1,
-                          callback: function($$v) {
-                            _vm.$set(_vm.formData, "category_1", $$v)
-                          },
-                          expression: "formData.category_1"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "datalist",
-                        { attrs: { id: "categories_1" } },
-                        _vm._l(_vm.categories, function(category) {
-                          return _c("option", {
-                            staticStyle: { color: "red" },
-                            domProps: { value: category.name }
-                          })
-                        }),
-                        0
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "column is-4" },
-                [
-                  _c(
-                    "b-field",
-                    {
-                      staticClass: "form-edit",
-                      attrs: { label: "Categoria 2" }
-                    },
-                    [
-                      _c("b-input", {
-                        staticStyle: { width: "100%" },
-                        attrs: { list: "categories_2", name: "category" },
-                        model: {
-                          value: _vm.formData.category_2,
-                          callback: function($$v) {
-                            _vm.$set(_vm.formData, "category_2", $$v)
-                          },
-                          expression: "formData.category_2"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "datalist",
-                        { attrs: { id: "categories_2" } },
-                        _vm._l(_vm.categories, function(category) {
-                          return _c("option", {
-                            staticStyle: { color: "red" },
-                            domProps: { value: category.name }
-                          })
-                        }),
-                        0
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "column is-4" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "column is-4" }, [
-                _c("label", { staticClass: "label", attrs: { for: "media" } }, [
-                  _vm._v("Mídia")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "select is-fullwidth" }, [
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.media_id,
-                          expression: "media_id"
-                        }
-                      ],
-                      attrs: { id: "media" },
-                      on: {
-                        change: [
-                          function($event) {
-                            var $$selectedVal = Array.prototype.filter
-                              .call($event.target.options, function(o) {
-                                return o.selected
-                              })
-                              .map(function(o) {
-                                var val = "_value" in o ? o._value : o.value
-                                return val
-                              })
-                            _vm.media_id = $event.target.multiple
-                              ? $$selectedVal
-                              : $$selectedVal[0]
-                          },
-                          function($event) {
-                            _vm.formData.media = _vm.media_id
-                          }
-                        ]
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "column is-half" },
+              [
+                _c(
+                  "b-field",
+                  { staticClass: "form-edit", attrs: { label: "Categoria 1" } },
+                  [
+                    _c("b-input", {
+                      staticStyle: { width: "100%" },
+                      attrs: { list: "categories_1", name: "category" },
+                      model: {
+                        value: _vm.formData.category_1,
+                        callback: function($$v) {
+                          _vm.$set(_vm.formData, "category_1", $$v)
+                        },
+                        expression: "formData.category_1"
                       }
-                    },
-                    _vm._l(_vm.media, function(m) {
-                      return _c("option", { domProps: { value: m.id } }, [
-                        _vm._v(_vm._s(m.name))
-                      ])
                     }),
-                    0
-                  ),
-                  _vm._v(" "),
-                  _c("p", [_vm._v("Selected: " + _vm._s(_vm.formData.media))])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "column is-8" }, [
-                _c("div", { staticClass: "field-body" }, [
-                  _c("div", { staticClass: "field" }, [
-                    _c(
-                      "label",
-                      { staticClass: "label", attrs: { for: "poster" } },
-                      [_vm._v("Poster URL")]
-                    ),
                     _vm._v(" "),
+                    _c(
+                      "datalist",
+                      { attrs: { id: "categories_1" } },
+                      _vm._l(_vm.categories, function(category) {
+                        return _c("option", {
+                          staticStyle: { color: "red" },
+                          domProps: { value: category.name }
+                        })
+                      }),
+                      0
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "column is-half" },
+              [
+                _c(
+                  "b-field",
+                  { staticClass: "form-edit", attrs: { label: "Categoria 2" } },
+                  [
+                    _c("b-input", {
+                      staticStyle: { width: "100%" },
+                      attrs: { list: "categories_2", name: "category" },
+                      model: {
+                        value: _vm.formData.category_2,
+                        callback: function($$v) {
+                          _vm.$set(_vm.formData, "category_2", $$v)
+                        },
+                        expression: "formData.category_2"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "datalist",
+                      { attrs: { id: "categories_2" } },
+                      _vm._l(_vm.categories, function(category) {
+                        return _c("option", {
+                          staticStyle: { color: "red" },
+                          domProps: { value: category.name }
+                        })
+                      }),
+                      0
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "column is-12" }, [
+              _c("label", { staticClass: "label" }, [_vm._v("Mídia")]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "columns is-multiline" },
+                _vm._l(_vm.media, function(m) {
+                  return _c("div", { staticClass: "column is-3" }, [
                     _c("input", {
                       directives: [
                         {
                           name: "model",
                           rawName: "v-model",
-                          value: _vm.formData.img_url,
-                          expression: "formData.img_url"
+                          value: _vm.formData.media,
+                          expression: "formData.media"
                         }
                       ],
-                      staticClass: "input",
-                      attrs: { id: "poster", name: "imdb", type: "text" },
-                      domProps: { value: _vm.formData.img_url },
+                      attrs: { id: m.slug, type: "checkbox" },
+                      domProps: {
+                        value: m.id,
+                        checked: Array.isArray(_vm.formData.media)
+                          ? _vm._i(_vm.formData.media, m.id) > -1
+                          : _vm.formData.media
+                      },
                       on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
+                        change: function($event) {
+                          var $$a = _vm.formData.media,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = m.id,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 &&
+                                _vm.$set(
+                                  _vm.formData,
+                                  "media",
+                                  $$a.concat([$$v])
+                                )
+                            } else {
+                              $$i > -1 &&
+                                _vm.$set(
+                                  _vm.formData,
+                                  "media",
+                                  $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                )
+                            }
+                          } else {
+                            _vm.$set(_vm.formData, "media", $$c)
                           }
-                          _vm.$set(_vm.formData, "img_url", $event.target.value)
                         }
                       }
-                    })
+                    }),
+                    _vm._v(" "),
+                    _c("label", { attrs: { for: m.slug } }, [
+                      _vm._v(_vm._s(m.name))
+                    ])
                   ])
-                ])
-              ]),
+                }),
+                0
+              ),
               _vm._v(" "),
-              _c("div", { staticClass: "column is-full" }, [
+              _c("br")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "column is-8" }, [
+              _c("div", { staticClass: "field-body" }, [
                 _c("div", { staticClass: "field" }, [
                   _c(
                     "label",
-                    { staticClass: "label", attrs: { for: "summary" } },
-                    [_vm._v("Resumo")]
+                    { staticClass: "label", attrs: { for: "poster" } },
+                    [_vm._v("Poster URL")]
                   ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "control" }, [
-                    _c("textarea", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.formData.summary,
-                          expression: "formData.summary"
-                        }
-                      ],
-                      staticClass: "textarea",
-                      attrs: { id: "summary" },
-                      domProps: { value: _vm.formData.summary },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.formData, "summary", $event.target.value)
-                        }
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.formData.img_url,
+                        expression: "formData.img_url"
                       }
-                    })
-                  ])
+                    ],
+                    staticClass: "input",
+                    attrs: { id: "poster", name: "imdb", type: "text" },
+                    domProps: { value: _vm.formData.img_url },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.formData, "img_url", $event.target.value)
+                      }
+                    }
+                  })
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "column is-full" }, [
+              _c("div", { staticClass: "field" }, [
+                _c(
+                  "label",
+                  { staticClass: "label", attrs: { for: "summary" } },
+                  [_vm._v("Resumo")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "control" }, [
+                  _c("textarea", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.formData.summary,
+                        expression: "formData.summary"
+                      }
+                    ],
+                    staticClass: "textarea",
+                    attrs: { id: "summary" },
+                    domProps: { value: _vm.formData.summary },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.formData, "summary", $event.target.value)
+                      }
+                    }
+                  })
                 ])
               ])
             ]),
@@ -40304,11 +40387,126 @@ var render = function() {
                   "button",
                   {
                     staticClass: "button is-primary is-fullwidth",
-                    on: { click: _vm.store }
+                    on: { click: _vm.saveMovie }
                   },
                   [_vm._v("ENVIAR")]
                 )
-              ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "column is-narrow" })
+            ]),
+            _vm._v(" "),
+            _c("hr"),
+            _vm._v(" "),
+            _c("h2", { staticClass: "title is-4" }, [_vm._v("Elenco")]),
+            _vm._v(" "),
+            _c("div", { staticClass: "column is-12" }, [
+              _vm.cast
+                ? _c("table", { staticClass: "table is-fullwidth" }, [
+                    _vm._m(2),
+                    _vm._v(" "),
+                    _c(
+                      "tbody",
+                      _vm._l(_vm.cast, function(ac, i) {
+                        return _c("tr", { key: i }, [
+                          _c("td", [_vm._v(_vm._s(ac.actor))]),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(ac.character))]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: ac.star,
+                                  expression: "ac.star"
+                                }
+                              ],
+                              attrs: { type: "checkbox" },
+                              domProps: {
+                                checked: Array.isArray(ac.star)
+                                  ? _vm._i(ac.star, null) > -1
+                                  : ac.star
+                              },
+                              on: {
+                                change: function($event) {
+                                  var $$a = ac.star,
+                                    $$el = $event.target,
+                                    $$c = $$el.checked ? true : false
+                                  if (Array.isArray($$a)) {
+                                    var $$v = null,
+                                      $$i = _vm._i($$a, $$v)
+                                    if ($$el.checked) {
+                                      $$i < 0 &&
+                                        _vm.$set(ac, "star", $$a.concat([$$v]))
+                                    } else {
+                                      $$i > -1 &&
+                                        _vm.$set(
+                                          ac,
+                                          "star",
+                                          $$a
+                                            .slice(0, $$i)
+                                            .concat($$a.slice($$i + 1))
+                                        )
+                                    }
+                                  } else {
+                                    _vm.$set(ac, "star", $$c)
+                                  }
+                                }
+                              }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: ac.order,
+                                  expression: "ac.order"
+                                }
+                              ],
+                              staticClass: "input is-small",
+                              attrs: { type: "number", name: "order" },
+                              domProps: { value: ac.order },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(ac, "order", $event.target.value)
+                                }
+                              }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "button is-link is-small",
+                                attrs: { disabled: ac.saved },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.saveCast(_vm.cast[i])
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                                salvar\n                            "
+                                )
+                              ]
+                            )
+                          ])
+                        ])
+                      }),
+                      0
+                    )
+                  ])
+                : _vm._e()
             ])
           ],
           1
@@ -40407,6 +40605,24 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("span", { staticClass: "icon has-text-orange" }, [
       _c("i", { staticClass: "far fa-star" })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Ator")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Personagem")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Estrela")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Ordem")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } })
+      ])
     ])
   }
 ]
@@ -40685,7 +40901,9 @@ var render = function() {
               ? _c("th", { attrs: { scope: "col" } }, [_vm._v("Tempo")])
               : _vm._e(),
             _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [_vm._v("Rating")]),
+            _vm._m(0),
+            _vm._v(" "),
+            _vm._m(1),
             _vm._v(" "),
             _c("th", { attrs: { scope: "col" } }, [_vm._v("Categoria 1")]),
             _vm._v(" "),
@@ -40705,7 +40923,7 @@ var render = function() {
                     attrs: { href: "#" },
                     on: {
                       click: function($event) {
-                        return _vm.toEdit(title)
+                        return _vm.toPage(title)
                       }
                     }
                   },
@@ -40722,13 +40940,13 @@ var render = function() {
               _c(
                 "td",
                 [
-                  _vm._l(title.rating, function(r) {
+                  _vm._l(title.imdb_rating, function(r) {
                     return _c("i", {
                       staticClass: "fas fa-star has-text-orange"
                     })
                   }),
                   _vm._v(" "),
-                  _vm._l(5 - title.rating, function(r) {
+                  _vm._l(5 - title.imdb_rating, function(r) {
                     return _c("i", {
                       staticClass: "far fa-star has-text-orange"
                     })
@@ -40736,6 +40954,25 @@ var render = function() {
                 ],
                 2
               ),
+              _vm._v(" "),
+              _c(
+                "td",
+                [
+                  _vm._l(title.our_rating, function(r) {
+                    return _c("i", {
+                      staticClass: "fas fa-star has-text-orange"
+                    })
+                  }),
+                  _vm._v(" "),
+                  _vm._l(5 - title.our_rating, function(r) {
+                    return _c("i", {
+                      staticClass: "far fa-star has-text-orange"
+                    })
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
               _c("td", [_vm._v(_vm._s(title.category_1))]),
               _vm._v(" "),
               _c("td", [_vm._v(_vm._s(title.category_2))])
@@ -40746,7 +40983,26 @@ var render = function() {
       ])
     : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("th", { attrs: { scope: "col" } }, [
+      _vm._v("IMDB"),
+      _c("sup", { staticClass: "has-text-warning" }, [_vm._v("[1]")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("th", { attrs: { scope: "col" } }, [
+      _vm._v("Nossa"),
+      _c("sup", { staticClass: "has-text-warning" }, [_vm._v("[2]")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -40926,7 +41182,7 @@ var render = function() {
                 })
               : _c("img", {
                   attrs: {
-                    src: "../images/poster/faker-poster.png",
+                    src: "../storage/images/posters/faker-poster.png",
                     width: "150",
                     height: "203",
                     alt: "poster do filme"
@@ -40946,19 +41202,42 @@ var render = function() {
               _vm._v(" "),
               _c("span", { staticClass: "tag is-light" }, [
                 _vm._v("Duração: " + _vm._s(_vm._f("strTime")(_vm.title.time)))
-              ]),
-              _vm._v(" "),
+              ])
+            ]),
+            _vm._v(" "),
+            _c("p", { staticClass: "mt-3" }, [
               _c(
                 "span",
-                { staticClass: "tag is-light" },
+                { staticClass: "tag is-info" },
                 [
-                  _vm._l(_vm.title.rating, function(i) {
+                  _c("span", { staticClass: "mr-2" }, [_vm._v("imdb")]),
+                  _vm._v(" "),
+                  _vm._l(_vm.title.imdb_rating, function(i) {
                     return _c("i", {
                       staticClass: "fas fa-star has-text-orange"
                     })
                   }),
                   _vm._v(" "),
-                  _vm._l(5 - _vm.title.rating, function(i) {
+                  _vm._l(5 - _vm.title.imdb_rating, function(i) {
+                    return _c("i", { staticClass: "far fa-star" })
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c(
+                "span",
+                { staticClass: "tag is-info" },
+                [
+                  _c("span", { staticClass: "mr-2" }, [_vm._v("nossa")]),
+                  _vm._v(" "),
+                  _vm._l(_vm.title.our_rating, function(i) {
+                    return _c("i", {
+                      staticClass: "fas fa-star has-text-orange"
+                    })
+                  }),
+                  _vm._v(" "),
+                  _vm._l(5 - _vm.title.our_rating, function(i) {
                     return _c("i", { staticClass: "far fa-star" })
                   })
                 ],
@@ -40968,7 +41247,7 @@ var render = function() {
             _vm._v(" "),
             _c("p", { staticClass: "mt-3" }, [
               _vm.title.category_2
-                ? _c("span", { staticClass: "tag is-link" }, [
+                ? _c("span", { staticClass: "tag is-success" }, [
                     _vm._v(
                       "Categorias: " +
                         _vm._s(_vm.title.category_1) +
@@ -40976,25 +41255,35 @@ var render = function() {
                         _vm._s(_vm.title.category_2)
                     )
                   ])
-                : _c("span", { staticClass: "tag is-link" }, [
+                : _c("span", { staticClass: "tag is-success" }, [
                     _vm._v("Categorias: " + _vm._s(_vm.title.category_1))
                   ])
             ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "media-right" }, [
-            _c("div", { staticClass: "column" }, [
-              _c(
-                "button",
-                {
-                  staticClass:
-                    "button is-light is-small has-tooltip-bottom mr-2 ml-2",
-                  attrs: { "data-tooltip": "Voltar" },
-                  on: { click: _vm.viewTable }
-                },
-                [_c("i", { staticClass: "fas fa-undo-alt" })]
-              )
-            ])
+            _c(
+              "div",
+              { staticClass: "column" },
+              [
+                _c(
+                  "b-tooltip",
+                  { attrs: { label: "Retornar" } },
+                  [
+                    _c(
+                      "b-button",
+                      {
+                        attrs: { type: "is-dark" },
+                        on: { click: _vm.viewTable }
+                      },
+                      [_c("i", { staticClass: "fas fa-undo-alt" })]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
           ])
         ]),
         _vm._v(" "),
@@ -41216,7 +41505,9 @@ var render = function() {
               ? _c("th", { attrs: { scope: "col" } }, [_vm._v("Tempo")])
               : _vm._e(),
             _vm._v(" "),
-            _c("th", { attrs: { scope: "col" } }, [_vm._v("Rating")]),
+            _vm._m(0),
+            _vm._v(" "),
+            _vm._m(1),
             _vm._v(" "),
             _c("th", { attrs: { scope: "col" } }, [_vm._v("Categoria 1")]),
             _vm._v(" "),
@@ -41253,13 +41544,13 @@ var render = function() {
               _c(
                 "td",
                 [
-                  _vm._l(title.rating, function(r) {
+                  _vm._l(title.imdb_rating, function(r) {
                     return _c("i", {
                       staticClass: "fas fa-star has-text-orange"
                     })
                   }),
                   _vm._v(" "),
-                  _vm._l(5 - title.rating, function(r) {
+                  _vm._l(5 - title.imdb_rating, function(r) {
                     return _c("i", {
                       staticClass: "far fa-star has-text-orange"
                     })
@@ -41267,6 +41558,25 @@ var render = function() {
                 ],
                 2
               ),
+              _vm._v(" "),
+              _c(
+                "td",
+                [
+                  _vm._l(title.our_rating, function(r) {
+                    return _c("i", {
+                      staticClass: "fas fa-star has-text-orange"
+                    })
+                  }),
+                  _vm._v(" "),
+                  _vm._l(5 - title.our_rating, function(r) {
+                    return _c("i", {
+                      staticClass: "far fa-star has-text-orange"
+                    })
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
               _c("td", [_vm._v(_vm._s(title.category_1))]),
               _vm._v(" "),
               _c("td", [_vm._v(_vm._s(title.category_2))])
@@ -41277,7 +41587,26 @@ var render = function() {
       ])
     : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("th", { attrs: { scope: "col" } }, [
+      _vm._v("IMDB"),
+      _c("sup", { staticClass: "has-text-warning" }, [_vm._v("[1]")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("th", { attrs: { scope: "col" } }, [
+      _vm._v("Nossa"),
+      _c("sup", { staticClass: "has-text-warning" }, [_vm._v("[2]")])
+    ])
+  }
+]
 render._withStripped = true
 
 

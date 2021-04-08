@@ -2,16 +2,23 @@
 
 namespace App\Models\Cast;
 
+use App\Models\Movie;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 
 class Cast extends Model
 {
-    use SoftDeletes, CascadeSoftDeletes;
-
     protected $table = 'cast';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
-    protected $cascadeDeletes = ['cast_movie'];
+
+    protected $fillable = ['actor_id',  'character_id'];
+
+    public function movies()
+    {
+        return $this->belongsToMany(Movie::class, 'cast_movie')->withPivot('order', 'star');
+    }
+
+    public function series()
+    {
+        return $this->belongsToMany(Movie::class, 'cast_series')->withPivot('order', 'star');
+    }
 }

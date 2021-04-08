@@ -18,7 +18,6 @@ class CreateMediaMovieTable extends Migration
             $table->unsignedInteger('movie_id');
             $table->boolean('active')->default(true);
             $table->string('slug', 25);
-            $table->softDeletes();
 
             $table->primary(['media_id', 'movie_id']);
 

@@ -16,7 +16,6 @@ class CreateActorsTable extends Migration
         Schema::create('actors', function (Blueprint $table) {
             $table->unsignedInteger('id', 1);
             $table->string('name', 45)->unique();
-            $table->softDeletes();
         });
     }
 

@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Cast\Cast;
 use App\Models\Producers\Director;
 use App\Models\Qualifiers\Media;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Movie extends Model
 {
-    use SoftDeletes, CascadeSoftDeletes;
-
     protected $table = 'movies';
     public $timestamps = false;
-    protected $dates = ['deleted_at'];
-    protected $cascadeDeletes = ['director_movie'];
 
+    protected $fillable = [
+        'title', 'original_title', 'year', 'time', 'category_1', 'category_2','our_rating', 'imdb_rating',
+        'poster', 'summary'
+    ];
     public function media()
     {
         return $this->belongsToMany(Media::class)->withPivot('active', 'slug');
@@ -26,6 +25,11 @@ class Movie extends Model
     public function directors()
     {
         return $this->belongsToMany(Director::class)->withPivot('order');
+    }
+
+    public function cast()
+    {
+        return $this->belongsToMany(Cast::class, 'cast_movie')->withPivot('order', 'star');
     }
 
     public function titlesStart($channel, $pp)
@@ -48,14 +52,14 @@ class Movie extends Model
         return $movies;
     }
 
-    public function cast($id)
+    public function castTitle($id)
     {
         return DB::table('cast_movie')
             ->leftJoin('cast', 'cast_movie.cast_id', '=', 'cast.id')
             ->leftJoin('actors', 'cast.actor_id', '=', 'actors.id')
             ->leftJoin('characters', 'cast.character_id', '=', 'characters.id')
             ->where('cast_movie.movie_id', '=', $id)
-            ->where('cast_movie.order', '<', 6)
+            ->where('cast_movie.star', '=', true)
             ->select('cast_movie.*', 'actors.name as actor', 'characters.name as character',
                 'cast.actor_id', 'cast.character_id')
             ->get();
