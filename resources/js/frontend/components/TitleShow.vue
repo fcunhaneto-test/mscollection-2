@@ -108,6 +108,7 @@ export default {
     },
     beforeMount: function () {
         axios.get(`/api/${this.table}/cast/${this.title.id}`).then(response => {
+            console.log('CAST', response.data)
             this.cast = response.data
             this.cast_total = this.cast.length
         }).catch(errors => console.log(errors))

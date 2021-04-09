@@ -285,11 +285,6 @@ export default {
                     })
                 }
 
-                // let d = response.data.crew.director
-                // for (let i = 0; i < d.length; i++) {
-                //     let order = i + 1
-                //     this.directors.push({ director: d[i].name, order: order, saved: false });
-                // }
                 this.isLoading = false
             }).catch(error => console.error(error))
 
@@ -357,7 +352,7 @@ export default {
 
         saveCast(c) {
             if(this.series_id) {
-                axios.post('/api/cast/store', {
+                axios.post('/api/cast/series/store', {
                     actor: c.actor,
                     character: c.character,
                     order: c.order,

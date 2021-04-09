@@ -3,6 +3,7 @@
 namespace App\Models\Cast;
 
 use App\Models\Movie;
+use App\Models\Series;
 use Illuminate\Database\Eloquent\Model;
 
 class Cast extends Model
@@ -19,6 +20,6 @@ class Cast extends Model
 
     public function series()
     {
-        return $this->belongsToMany(Movie::class, 'cast_series')->withPivot('order', 'star');
+        return $this->belongsToMany(Series::class, 'cast_series')->withPivot('order', 'star');
     }
 }

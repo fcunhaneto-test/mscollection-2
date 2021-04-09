@@ -29,7 +29,7 @@ Route::prefix('series')->group(function() {
     Route::get('/titles-start/{channel}/{pp}', 'SeriesController@titlesStart');
     Route::get('/titles-page/{channel}/{page}/{pp}', 'SeriesController@titlesPage');
 
-    Route::get('/cast/{id}', 'SeriesController@cast');
+    Route::get('/cast/{id}', 'SeriesController@castTitle');
     Route::get('/producers/{id}', 'SeriesController@producers');
 
     Route::post('/store', 'SeriesController@store')->middleware('can:isAdmin');
@@ -60,7 +60,8 @@ Route::prefix('categories')->group(function() {
 });
 
 Route::prefix('cast')->group(function() {
-    Route::post('/store', 'Cast\CastController@store')->middleware('can:isAdmin');
+    Route::post('/movie/store', 'Cast\CastController@castMovie');
+    Route::post('/series/store', 'Cast\CastController@castSeries');
 });
 
 Route::prefix('directors')->group(function() {

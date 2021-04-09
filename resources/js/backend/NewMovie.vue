@@ -350,7 +350,7 @@ export default {
 
         saveCast(c) {
             if(this.movie_id) {
-                axios.post('/api/cast/store', {
+                axios.post('/api/cast/movie/store', {
                     actor: c.actor,
                     character: c.character,
                     order: c.order,
