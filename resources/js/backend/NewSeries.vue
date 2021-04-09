@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <hr>
-                <h2 class="title is-4">Filme Formulário</h2>
+                <h2 class="title is-4">Série Formulário</h2>
                 <div class="columns is-multiline">
                     <div class="column is-half">
                         <div class="field">
@@ -27,19 +27,13 @@
                                    class="input" type="text">
                         </div>
                     </div>
-                    <div class="column is-3">
+                    <div class="column is-half">
                         <div class="field">
                             <label for="year" class="label">Ano</label>
                             <input id="year" name="title" v-model="formData.year" class="input" type="text">
                         </div>
                     </div>
-                    <div class="column is-3">
-                        <div class="field">
-                            <label for="time" class="label">Tempo</label>
-                            <input id="time" name="time" v-model="formData.time" class="input" type="time">
-                        </div>
-                    </div>
-                    <div class="column is-6">
+                    <div class="column is-half">
                         <div class="field">
                             <label class="label">Rating</label>
                             <a v-for="ys in yellow" href="#" :key="'yellow_' + ys" @click="delStar(ys)">
@@ -97,7 +91,7 @@
                 </div>
                 <div class="columns is-centered">
                     <div class="column is-one-third">
-                        <button class="button is-primary is-fullwidth" @click="saveMovie">ENVIAR</button>
+                        <button class="button is-primary is-fullwidth" @click="saveSeries">ENVIAR</button>
                     </div>
                     <div class="column is-narrow"></div>
                 </div>
@@ -116,7 +110,7 @@
                         </thead>
                         <tbody>
                         <tr v-for="(ac, i) in cast" :key="i">
-                            <td><td><input type="text" class="input" v-model="ac.actor"></td>
+                            <td>{{ ac.actor }}</td>
                             <td><input type="text" class="input" v-model="ac.character"></td>
                             <td><input type="checkbox" v-model="ac.star"></td>
                             <td><input type="number" name="order" class="input is-small" v-model="ac.order"></input>
@@ -131,23 +125,27 @@
                     </table>
 
                     <hr>
-                    <h2 class="title is-4">Diretores</h2>
+                    <h2 class="title is-4">Criadores</h2>
                     <div class="column is-12">
-                        <table v-if="directors" class="table is-fullwidth">
+                        <table class="table is-fullwidth">
                             <thead>
                             <tr>
-                                <th scope="col">Diretor</th>
+                                <th scope="col">Criador</th>
                                 <th scope="col">Ordem</th>
-                                <th scope="col"></th>
+                                <th scope="col">
+                                    <button class="button is-info" @click="addCreator">
+                                        <i class="far fa-plus-square"></i>
+                                    </button>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(d, i) in directors" :key="i">
-                                <td>{{ d.director }}</td>
-                                <td><input type="number" name="order" class="input is-small" v-model="d.order"></input>
+                            <tr v-if="creators" v-for="(c, i) in creators" :key="i">
+                                <td><input type="text" name="creator" class="input" v-model="creators[i].creator"></td>
+                                <td><input type="number" name="order" class="input" v-model="creators[i].order"></input>
                                 </td>
                                 <td>
-                                    <button class="button is-link is-small" :disabled="d.saved" @click="saveDiretor(directors[i])">
+                                    <button class="button is-link is-small" :disabled="creators[i].saved" @click="saveCreator(creators[i])">
                                         salvar
                                     </button>
                                 </td>
@@ -158,22 +156,22 @@
                 </div>
             </div>
         </div>
-        <b-modal v-model="movieSaved" :width="400" :height="400">
+        <b-modal v-model="seriesSaved" :width="400" :height="400">
             <div class="card">
                 <div class="card-content">
                     <div class="content has-text-centered">
-                        <p>Filme salvo com sucesso</p>
-                        <button class="button is-primary" autofocus @click="movieSaved = false">FECHAR</button>
+                        <p>Série salva com sucesso</p>
+                        <button class="button is-primary" autofocus @click="seriesSaved = false">FECHAR</button>
                     </div>
                 </div>
             </div>
         </b-modal>
-        <b-modal v-model="movieExist" :width="400" :height="400">
+        <b-modal v-model="seriesExist" :width="400" :height="400">
             <div class="card">
                 <div class="card-content">
                     <div class="content has-text-centered">
-                        <p>Filme já existe</p>
-                        <button class="button is-primary" autofocus @click="movieExist = false">FECHAR</button>
+                        <p>Série já existe</p>
+                        <button class="button is-primary" autofocus @click="seriesExist = false">FECHAR</button>
                     </div>
                 </div>
             </div>
@@ -188,8 +186,8 @@ export default {
     data() {
         return {
             isLoading: false,
-            movieSaved: false,
-            movieExist: false,
+            seriesSaved: false,
+            seriesExist: false,
             yellow: 0,
             white: 5,
             w_imdb: 5,
@@ -197,7 +195,6 @@ export default {
                 title: '',
                 original_title: '',
                 year: 1900,
-                time: '00:00',
                 our_rating: 0,
                 imdb_rating: false,
                 category_1: null,
@@ -210,9 +207,10 @@ export default {
                 img_height: 0,
             },
             imdb: '',
-            movie_id: 0,
+            series_id: 0,
             cast: [],
-            directors: [],
+            creators: [],
+            creator_index: 1
         }
     },
     computed: {
@@ -222,6 +220,9 @@ export default {
         media() {
             return this.$store.getters.getMedia
         }
+    },
+    watch: {
+        creators(){}
     },
     methods: {
         delStar(ys) {
@@ -260,7 +261,6 @@ export default {
                 console.log('IMDB', response.data)
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
-                this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
                 this.formData.img_url = response.data.base.image.url
                 this.formData.img_width = response.data.base.image.width
                 this.formData.img_height = response.data.base.image.height
@@ -285,11 +285,11 @@ export default {
                     })
                 }
 
-                let d = response.data.crew.director
-                for (let i = 0; i < d.length; i++) {
-                    let order = i + 1
-                    this.directors.push({ director: d[i].name, order: order, saved: false });
-                }
+                // let d = response.data.crew.director
+                // for (let i = 0; i < d.length; i++) {
+                //     let order = i + 1
+                //     this.directors.push({ director: d[i].name, order: order, saved: false });
+                // }
                 this.isLoading = false
             }).catch(error => console.error(error))
 
@@ -331,16 +331,23 @@ export default {
             });
         },
 
+        addCreator() {
+            this.creators.push({
+                creator: '',
+                order: this.creator_index,
+                saved: false
+            })
+        },
         /**
          * Send data to store movie.
          */
-        saveMovie() {
-            axios.post('/api/movies/store', this.formData).then(response => {
+        saveSeries() {
+            axios.post('/api/series/store', this.formData).then(response => {
                 if (response.status === 200) {
-                    this.movie_id = parseInt(response.data);
-                    this.movieSaved = true
+                    this.series_id = parseInt(response.data);
+                    this.seriesSaved = true
                 } else if ((response.status === 202)) {
-                    this.movieExist = true
+                    this.seriesExist = true
                 }
             }).catch(error => {
                 this.isLoading = false
@@ -349,13 +356,13 @@ export default {
         },
 
         saveCast(c) {
-            if(this.movie_id) {
+            if(this.series_id) {
                 axios.post('/api/cast/store', {
                     actor: c.actor,
                     character: c.character,
                     order: c.order,
                     star: c.star,
-                    movie_id: this.movie_id
+                    series_id: this.series_id
                 }).then(response => {
                     if(response.status === 200) {
                         c.saved = true
@@ -366,15 +373,16 @@ export default {
             }
         },
 
-        saveDiretor(d) {
-            if(this.movie_id) {
-                axios.post('/api/directors/store', {
-                    director: d.director,
-                    order: d.order,
-                    movie_id: this.movie_id
+        saveCreator(c) {
+            if(this.series_id) {
+                console.log('Creator', c.creator, c.order, this.series_id)
+                axios.post('/api/creators/store', {
+                    creator: c.creator,
+                    order: c.order,
+                    series_id: this.series_id
                 }).then(response => {
                     if(response.status === 200) {
-                        d.saved = true
+                        c.saved = true
                     }
                 }).catch(error => {
                     console.error(error)

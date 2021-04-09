@@ -21,8 +21,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="column is-3 has-text-right pb-0">
-                    <button class="button is-link ml-6" @click="newTitle">NOVO {{ header|strSingular }}</button>
+                <div class="column is-6 has-text-right pb-0">
+                    <button class="button is-link ml-6" @click="newMovie">Novo Filme</button>
+                    <button class="button is-info ml-3" @click="newSeries">Nova Série</button>
                 </div>
             </div>
             <div class="column is-full">
@@ -77,10 +78,11 @@ export default {
         newPP() {
             this.$store.commit('SET_PP', this.selected)
         },
-        newTitle() {
-            if(this.table === 'movies') {
-                this.$router.push('/admin/novo/filme')
-            }
+        newMovie() {
+            this.$router.push('/admin/novo/filme')
+        },
+        newSeries() {
+            this.$router.push('/admin/nova/serie')
         }
     },
     beforeMount() {

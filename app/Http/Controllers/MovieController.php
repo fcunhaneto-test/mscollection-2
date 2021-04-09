@@ -60,7 +60,6 @@ class MovieController extends Controller
             $movie->media()->attach($media->id, ['active' => true, 'slug' => $media->slug]);
         }
 
-
         return response()->json($movie->id, 200);
     }
 }

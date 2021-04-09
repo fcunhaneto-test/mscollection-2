@@ -16,7 +16,6 @@ class CreateMediaSeriesTable extends Migration
         Schema::create('media_series', function (Blueprint $table) {
             $table->unsignedTinyInteger('media_id');
             $table->unsignedInteger('series_id');
-            $table->boolean('active')->default(true);
             $table->string('slug', 25);
 
             $table->primary(['media_id', 'series_id']);

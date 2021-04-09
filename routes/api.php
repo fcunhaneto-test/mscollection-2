@@ -31,6 +31,8 @@ Route::prefix('series')->group(function() {
 
     Route::get('/cast/{id}', 'SeriesController@cast');
     Route::get('/producers/{id}', 'SeriesController@producers');
+
+    Route::post('/store', 'SeriesController@store')->middleware('can:isAdmin');
 });
 
 Route::prefix('admin')->group(function() {
@@ -63,4 +65,8 @@ Route::prefix('cast')->group(function() {
 
 Route::prefix('directors')->group(function() {
     Route::post('/store', 'Producers\DirectorController@store')->middleware('can:isAdmin');
+});
+
+Route::prefix('creators')->group(function() {
+    Route::post('/store', 'Producers\CreatorController@store')->middleware('can:isAdmin');
 });
