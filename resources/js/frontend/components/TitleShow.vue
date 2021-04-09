@@ -106,18 +106,14 @@ export default {
             this.$emit('viewTable')
         }
     },
-    beforeMount() {
+    beforeMount: function () {
         axios.get(`/api/${this.table}/cast/${this.title.id}`).then(response => {
             this.cast = response.data
             this.cast_total = this.cast.length
-            console.log('Total Cast', this.cast_total)
-            console.log('Cast', this.cast)
         }).catch(errors => console.log(errors))
         axios.get(`/api/${this.table}/producers/${this.title.id}`).then(response => {
             this.producers = response.data
             this.prod_total = this.producers.length
-            console.log('Total Producers', this.prod_total)
-            console.log('Producers', this.producers)
         }).catch(errors => console.log(errors))
     }
 }

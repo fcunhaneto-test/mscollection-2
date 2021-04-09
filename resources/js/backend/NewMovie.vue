@@ -129,6 +129,32 @@
                         </tr>
                         </tbody>
                     </table>
+
+                    <hr>
+                    <h2 class="title is-4">Diretores</h2>
+                    <div class="column is-12">
+                        <table v-if="cast" class="table is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th scope="col">Diretor</th>
+                                <th scope="col">Ordem</th>
+                                <th scope="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(d, i) in directors" :key="i">
+                                <td>{{ d.director }}</td>
+                                <td><input type="number" name="order" class="input is-small" v-model="d.order"></input>
+                                </td>
+                                <td>
+                                    <button class="button is-link is-small" :disabled="d.saved" @click="saveDiretor(directors[i])">
+                                        salvar
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -258,9 +284,11 @@ export default {
                         saved: false
                     })
                 }
-                let director = response.data.crew.director
-                for (let i = 0; i < director.length; i++) {
-                    this.directors.push(director[i].name)
+
+                let d = response.data.crew.director
+                for (let i = 0; i < d.length; i++) {
+                    let order = i + 1
+                    this.directors.push({ director: d[i].name, order: order, saved: false });
                 }
                 this.isLoading = false
             }).catch(error => console.error(error))
@@ -331,6 +359,22 @@ export default {
                 }).then(response => {
                     if(response.status === 200) {
                         c.saved = true
+                    }
+                }).catch(error => {
+                    console.error(error)
+                })
+            }
+        },
+
+        saveDiretor(d) {
+            if(this.movie_id) {
+                axios.post('/api/directors/store', {
+                    director: d.director,
+                    order: d.order,
+                    movie_id: this.movie_id
+                }).then(response => {
+                    if(response.status === 200) {
+                        d.saved = true
                     }
                 }).catch(error => {
                     console.error(error)
