@@ -27,6 +27,10 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'title' => 'required_with|String',
+            'year' => 'required',
+        ]);
         $movie = new Movie();
         $exist = $movie->where('title', '=', $request->title)->where('year', '=', $request->year)->count();
         if($exist) {
@@ -61,5 +65,35 @@ class MovieController extends Controller
         }
 
         return response()->json($movie->id, 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required_with|String',
+            'year' => 'required',
+        ]);
+
+        $movie = Movie::findOrFail($request->id);
+        $movie->title = $request->title;
+        $movie->original_title = $request->original_title;
+        $movie->year = $request->year;
+        $movie->time = $request->time;
+        $movie->our_rating = $request->our_rating;
+        $movie->imdb_rating = $request->imdb_rating;
+        $movie->category_1 = $request->category_1;
+        $movie->category_2 = $request->category_2;
+        $movie->poster = $request->poster;
+        $movie->summary = $request->summary;
+
+        $movie->save();
+
+        return response()->json('', 200);
     }
 }

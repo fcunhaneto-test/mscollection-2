@@ -5,8 +5,8 @@
             <th scope="col">Títulos</th>
             <th scope="col">Ano</th>
             <th v-if="table === 'movies'" scope="col">Tempo</th>
-            <th scope="col">IMDB<sup class="has-text-warning">[1]</sup></th>
-            <th scope="col">Nossa<sup class="has-text-warning">[2]</sup></th>
+            <th scope="col">Classificação<br/>IMDB<sup class="has-text-warning">[1]</sup></th>
+            <th scope="col">Classificação<br/>Nossa<sup class="has-text-warning">[2]</sup></th>
             <th scope="col">Categoria 1</th>
             <th scope="col">Categoria 2</th>
         </tr>
@@ -21,8 +21,8 @@
                 <i v-for="r in (5 - title.imdb_rating)" class="far fa-star has-text-orange"></i>
             </td>
             <td>
-                <i v-for="r in title.our_rating" class="fas fa-star has-text-orange"></i>
-                <i v-for="r in (5 - title.our_rating)" class="far fa-star has-text-orange"></i>
+                <i v-for="r in title.our_rating" class="fas fa-star has-text-danger"></i>
+                <i v-for="r in (5 - title.our_rating)" class="far fa-star has-text-danger"></i>
             </td>
             <td>{{ title.category_1 }}</td>
             <td>{{ title.category_2 }}</td>

@@ -14,26 +14,26 @@
                 <hr>
                 <h2 class="title is-4">Série Formulário</h2>
                 <div class="columns is-multiline">
-                    <div class="column is-half">
+                    <div class="column is-6">
                         <div class="field">
                             <label for="title" class="label">Título</label>
                             <input id="title" name="title" v-model="formData.title" class="input" type="text">
                         </div>
                     </div>
-                    <div class="column is-half">
+                    <div class="column is-6">
                         <div class="field">
                             <label for="original_title" class="label">Título Original</label>
                             <input id="original_title" name="original_title" v-model="formData.original_title"
                                    class="input" type="text">
                         </div>
                     </div>
-                    <div class="column is-half">
+                    <div class="column is-6">
                         <div class="field">
                             <label for="year" class="label">Ano</label>
                             <input id="year" name="title" v-model="formData.year" class="input" type="text">
                         </div>
                     </div>
-                    <div class="column is-half">
+                    <div class="column is-6">
                         <div class="field">
                             <label class="label">Rating</label>
                             <a v-for="ys in yellow" href="#" :key="'yellow_' + ys" @click="delStar(ys)">
@@ -44,115 +44,122 @@
                             </a>
                         </div>
                     </div>
-                </div>
-                <div class="column is-half">
-                    <b-field label="Categoria 1" class="form-edit">
-                        <b-input list="categories_1" name="category" v-model="formData.category_1"
-                                 style="width: 100%;"/>
-                        <datalist id="categories_1">
-                            <option v-for="category in categories" :value="category.name" style="color: red"/>
-                        </datalist>
-                    </b-field>
-                </div>
-                <div class="column is-half">
-                    <b-field label="Categoria 2" class="form-edit">
-                        <b-input list="categories_2" name="category" v-model="formData.category_2"
-                                 style="width: 100%;"/>
-                        <datalist id="categories_2">
-                            <option v-for="category in categories" :value="category.name" style="color: red"/>
-                        </datalist>
-                    </b-field>
-                </div>
-                <div class="column is-12 mb-0 pb-0">
-                    <label class="label">Mídia</label>
-                    <div class="columns is-multiline">
-                        <div v-for="m in media" class="column is-3">
-                            <input :id="m.slug" type="checkbox" :value="m.id" v-model="formData.media">
-                            <label :for="m.slug">{{ m.name }}</label>
+
+                    <div class="column is-6">
+                        <b-field label="Categoria 1" class="form-edit">
+                            <b-input list="categories_1" name="category" v-model="formData.category_1"
+                                     style="width: 100%;"/>
+                            <datalist id="categories_1">
+                                <option v-for="category in categories" :value="category.name" style="color: red"/>
+                            </datalist>
+                        </b-field>
+                    </div>
+                    <div class="column is-6">
+                        <b-field label="Categoria 2" class="form-edit">
+                            <b-input list="categories_2" name="category" v-model="formData.category_2"
+                                     style="width: 100%;"/>
+                            <datalist id="categories_2">
+                                <option v-for="category in categories" :value="category.name" style="color: red"/>
+                            </datalist>
+                        </b-field>
+                    </div>
+                    <div class="column is-12 mb-0 pb-0">
+                        <label class="label">Mídia</label>
+                        <div class="columns is-multiline">
+                            <div v-for="m in media" class="column is-3">
+                                <input :id="m.slug" type="checkbox" :value="m.id" v-model="formData.media">
+                                <label :for="m.slug">{{ m.name }}</label>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                    <div class="column is-12 mt-0 pt-0">
+                        <div class="field-body">
+                            <div class="field">
+                                <label for="poster" class="label">Poster URL</label>
+                                <input id="poster" name="imdb" v-model="formData.img_url" class="input" type="text">
+                            </div>
                         </div>
                     </div>
-                    <br>
-                </div>
-                <div class="column is-8 mt-0 pt-0">
-                    <div class="field-body">
+                    <div class="column is-12">
                         <div class="field">
-                            <label for="poster" class="label">Poster URL</label>
-                            <input id="poster" name="imdb" v-model="formData.img_url" class="input" type="text">
+                            <label for="summary" class="label">Resumo</label>
+                            <div class="control">
+                                <textarea id="summary" class="textarea" v-model="formData.summary"></textarea>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="column is-full">
-                    <div class="field">
-                        <label for="summary" class="label">Resumo</label>
-                        <div class="control">
-                            <textarea id="summary" class="textarea" v-model="formData.summary"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="columns is-centered">
-                    <div class="column is-one-third">
+                    <div class="column is-4"></div>
+                    <div class="column is-4">
                         <button class="button is-primary is-fullwidth" @click="saveSeries">ENVIAR</button>
                     </div>
-                    <div class="column is-narrow"></div>
-                </div>
-                <hr>
-                <div class="column is-12">
-                    <h2 class="title is-4">Elenco</h2>
-                    <table v-if="cast" class="table is-fullwidth">
-                        <thead>
-                        <tr>
-                            <th scope="col">Ator</th>
-                            <th scope="col">Personagem</th>
-                            <th scope="col">Estrela</th>
-                            <th scope="col">Ordem</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="(ac, i) in cast" :key="i">
-                            <td>{{ ac.actor }}</td>
-                            <td><input type="text" class="input" v-model="ac.character"></td>
-                            <td><input type="checkbox" v-model="ac.star"></td>
-                            <td><input type="number" name="order" class="input is-small" v-model="ac.order"></input>
-                            </td>
-                            <td>
-                                <button class="button is-link is-small" :disabled="ac.saved" @click="saveCast(cast[i])">
-                                    salvar
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <hr>
-                <div class="column is-12">
-                    <h2 class="title is-4">Criadores</h2>
-                    <table class="table is-fullwidth">
-                        <thead>
-                        <tr>
-                            <th scope="col">Criador</th>
-                            <th scope="col">Ordem</th>
-                            <th scope="col">
-                                <button class="button is-info" @click="addCreator">
-                                    <i class="far fa-plus-square"></i>
-                                </button>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-if="creators" v-for="(c, i) in creators" :key="i">
-                            <td><input type="text" name="creator" class="input" v-model="creators[i].creator"></td>
-                            <td><input type="number" name="order" class="input" v-model="creators[i].order"></input>
-                            </td>
-                            <td>
-                                <button class="button is-link is-small" :disabled="creators[i].saved"
-                                        @click="saveCreator(creators[i])">
-                                    salvar
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div class="column is-4"></div>
+                    <hr>
+                    <div class="column is-12">
+                        <h2 class="title is-4">Elenco</h2>
+                        <table v-if="cast" class="table is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th scope="col">Ator</th>
+                                <th scope="col">Personagem</th>
+                                <th scope="col">Estrela</th>
+                                <th scope="col">Ordem</th>
+                                <th scope="col">
+                                    <b-tooltip label="Novos Ator/Personagem">
+                                        <b-button class="button is-info is-small" @click="addCast">
+                                            <i class="fas fa-plus"></i></b-button>
+                                    </b-tooltip>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(ac, i) in cast" :key="i">
+                                <td><input type="text" class="input" v-model="ac.actor"></td>
+                                <td><input type="text" class="input" v-model="ac.character"></td>
+                                <td><input type="checkbox" v-model="ac.star"></td>
+                                <td><input type="number" name="order" class="input is-small" v-model="ac.order"></input>
+                                </td>
+                                <td>
+                                    <button class="button is-link is-small" :disabled="ac.saved"
+                                            @click="saveCast(cast[i])">
+                                        salvar
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <div class="column is-12">
+                        <h2 class="title is-4">Criadores</h2>
+                        <table class="table is-fullwidth">
+                            <thead>
+                            <tr>
+                                <th scope="col">Criador</th>
+                                <th scope="col">Ordem</th>
+                                <th scope="col">
+                                    <b-tooltip label="Novo Criador">
+                                        <b-button class="button is-info is-small" @click="addProducer">
+                                            <i class="fas fa-plus"></i></b-button>
+                                    </b-tooltip>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-if="creators" v-for="(c, i) in creators" :key="i">
+                                <td><input type="text" name="creator" class="input" v-model="creators[i].creator"></td>
+                                <td><input type="number" name="order" class="input" v-model="creators[i].order"></input>
+                                </td>
+                                <td>
+                                    <button class="button is-link is-small" :disabled="creators[i].saved"
+                                            @click="saveCreator(creators[i])">
+                                        salvar
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -233,12 +240,10 @@ export default {
             this.formData.rating = this.yellow
         },
         addStar(ws) {
-            console.log('ADD', ws)
             this.yellow += ws
             this.white = 5 - this.yellow
             this.formData.our_rating = this.yellow
         },
-
         /**
          * Scraping datas from IMDB
          */
@@ -255,7 +260,6 @@ export default {
             };
 
             axios.request(options1).then(response => {
-                console.log('IMDB', response.data)
                 this.formData.original_title = response.data.base.title
                 this.formData.year = response.data.base.year
                 this.formData.img_url = response.data.base.image.url
@@ -322,14 +326,6 @@ export default {
                 console.error(error);
             });
         },
-
-        addCreator() {
-            this.creators.push({
-                creator: '',
-                order: this.creator_index,
-                saved: false
-            })
-        },
         /**
          * Send data to store movie.
          */
@@ -346,7 +342,6 @@ export default {
                 console.error(error)
             })
         },
-
         saveCast(c) {
             if (this.series_id) {
                 axios.post('/api/cast/series/store', {
@@ -364,10 +359,8 @@ export default {
                 })
             }
         },
-
         saveCreator(c) {
             if (this.series_id) {
-                console.log('Creator', c.creator, c.order, this.series_id)
                 axios.post('/api/creators/store', {
                     creator: c.creator,
                     order: c.order,
@@ -381,7 +374,25 @@ export default {
                 })
             }
         },
-
+        /**
+         * Adicionar as tabelas novo diretor ou novo elenco em branco
+         */
+        addProducer() {
+            this.creators.push({
+                creator: '',
+                order: this.creator_index,
+                saved: false
+            })
+        },
+        addCast() {
+            this.cast.push({
+                actor: '',
+                character: '',
+                order: 1,
+                star: false,
+                saved: false
+            })
+        },
         /**
          * Covert time im minutes to hour:minutes
          * @param t

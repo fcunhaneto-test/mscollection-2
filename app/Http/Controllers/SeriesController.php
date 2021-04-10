@@ -62,4 +62,33 @@ class SeriesController extends Controller
 
         return response()->json($series->id, 200);
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required_with|String',
+            'year' => 'required',
+        ]);
+
+        $movie = Series::findOrFail($request->id);
+        $movie->title = $request->title;
+        $movie->original_title = $request->original_title;
+        $movie->year = $request->year;
+        $movie->our_rating = $request->our_rating;
+        $movie->imdb_rating = $request->imdb_rating;
+        $movie->category_1 = $request->category_1;
+        $movie->category_2 = $request->category_2;
+        $movie->poster = $request->poster;
+        $movie->summary = $request->summary;
+
+        $movie->save();
+
+        return response()->json('', 200);
+    }
 }

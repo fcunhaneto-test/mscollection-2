@@ -24,6 +24,7 @@ Route::prefix('movies')->group(function() {
     Route::get('/media/{id}', 'MovieController@mediaTitle');
 
     Route::post('/store', 'MovieController@store')->middleware('can:isAdmin');
+    Route::put('/update', 'MovieController@update')->middleware('can:isAdmin');
 });
 
 Route::prefix('series')->group(function() {
@@ -35,6 +36,7 @@ Route::prefix('series')->group(function() {
     Route::get('/media/{id}', 'SeriesController@mediaTitle');
 
     Route::post('/store', 'SeriesController@store')->middleware('can:isAdmin');
+    Route::put('/update', 'SeriesController@update')->middleware('can:isAdmin');
 });
 
 Route::prefix('admin')->group(function() {

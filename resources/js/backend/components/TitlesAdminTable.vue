@@ -44,9 +44,12 @@ export default {
     },
     methods: {
         toEdit(title) {
-            console.log('SET TITLE', title)
             this.$store.commit('SET_TITLE', title)
-            this.$router.push({ name: 'edit-movie' })
+            if(this.table === 'movies') {
+                this.$router.push({ name: 'edit-movie' })
+            } else {
+                this.$router.push({ name: 'edit-series' })
+            }
         },
     }
 }

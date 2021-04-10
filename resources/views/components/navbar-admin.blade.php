@@ -1,7 +1,7 @@
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
     <div class="container is-max-widescreen">
         <div class="navbar-brand">
-            <a class="navbar-item" href="/">{{ config('app.name', 'Laravel') }}</a>
+            <a class="navbar-item" href="{{ url('/admin') }}">{{ config('app.name', 'Laravel') }}</a>
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
                data-target="navbarAdmin">
