@@ -21,6 +21,7 @@ Route::prefix('movies')->group(function() {
 
     Route::get('/cast/{id}', 'MovieController@castTitle');
     Route::get('/producers/{id}', 'MovieController@producers');
+    Route::get('/media/{id}', 'MovieController@mediaTitle');
 
     Route::post('/store', 'MovieController@store')->middleware('can:isAdmin');
 });
@@ -31,6 +32,7 @@ Route::prefix('series')->group(function() {
 
     Route::get('/cast/{id}', 'SeriesController@castTitle');
     Route::get('/producers/{id}', 'SeriesController@producers');
+    Route::get('/media/{id}', 'SeriesController@mediaTitle');
 
     Route::post('/store', 'SeriesController@store')->middleware('can:isAdmin');
 });
@@ -60,8 +62,8 @@ Route::prefix('categories')->group(function() {
 });
 
 Route::prefix('cast')->group(function() {
-    Route::post('/movie/store', 'Cast\CastController@castMovie');
-    Route::post('/series/store', 'Cast\CastController@castSeries');
+    Route::post('/movie/store', 'Cast\CastController@castMovie')->middleware('can:isAdmin');
+    Route::post('/series/store', 'Cast\CastController@castSeries')->middleware('can:isAdmin');
 });
 
 Route::prefix('directors')->group(function() {

@@ -77,4 +77,10 @@ class Series extends Model
         return $series->creators;
     }
 
+    public function mediaTitle($id)
+    {
+        $series = Series::findOrFail($id);
+        return $series->media;
+    }
+
 }

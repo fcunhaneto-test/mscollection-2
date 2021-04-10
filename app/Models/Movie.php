@@ -70,4 +70,10 @@ class Movie extends Model
         $movies = Movie::findOrFail($id);
         return $movies->directors;
     }
+
+    public function mediaTitle($id)
+    {
+        $movies = Movie::findOrFail($id);
+        return $movies->media;
+    }
 }

@@ -75,6 +75,10 @@ trait TitlesController
         return $this->table->castTitle($id);
     }
 
+    public function mediaTitle($id) {
+        return $this->table->mediaTitle($id);
+    }
+
     public function producers($id) {
         return $this->table->producers($id);
     }

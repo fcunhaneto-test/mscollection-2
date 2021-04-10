@@ -63,7 +63,7 @@
                         </datalist>
                     </b-field>
                 </div>
-                <div class="column is-12">
+                <div class="column is-12 mb-0 pb-0">
                     <label class="label">Mídia</label>
                     <div class="columns is-multiline">
                         <div v-for="m in media" class="column is-3">
@@ -73,7 +73,7 @@
                     </div>
                     <br>
                 </div>
-                <div class="column is-8">
+                <div class="column is-8 mt-0 pt-0">
                     <div class="field-body">
                         <div class="field">
                             <label for="poster" class="label">Poster URL</label>
@@ -96,8 +96,8 @@
                     <div class="column is-narrow"></div>
                 </div>
                 <hr>
-                <h2 class="title is-4">Elenco</h2>
                 <div class="column is-12">
+                    <h2 class="title is-4">Elenco</h2>
                     <table v-if="cast" class="table is-fullwidth">
                         <thead>
                         <tr>
@@ -123,36 +123,36 @@
                         </tr>
                         </tbody>
                     </table>
-
-                    <hr>
+                </div>
+                <hr>
+                <div class="column is-12">
                     <h2 class="title is-4">Criadores</h2>
-                    <div class="column is-12">
-                        <table class="table is-fullwidth">
-                            <thead>
-                            <tr>
-                                <th scope="col">Criador</th>
-                                <th scope="col">Ordem</th>
-                                <th scope="col">
-                                    <button class="button is-info" @click="addCreator">
-                                        <i class="far fa-plus-square"></i>
-                                    </button>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-if="creators" v-for="(c, i) in creators" :key="i">
-                                <td><input type="text" name="creator" class="input" v-model="creators[i].creator"></td>
-                                <td><input type="number" name="order" class="input" v-model="creators[i].order"></input>
-                                </td>
-                                <td>
-                                    <button class="button is-link is-small" :disabled="creators[i].saved" @click="saveCreator(creators[i])">
-                                        salvar
-                                    </button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table is-fullwidth">
+                        <thead>
+                        <tr>
+                            <th scope="col">Criador</th>
+                            <th scope="col">Ordem</th>
+                            <th scope="col">
+                                <button class="button is-info" @click="addCreator">
+                                    <i class="far fa-plus-square"></i>
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-if="creators" v-for="(c, i) in creators" :key="i">
+                            <td><input type="text" name="creator" class="input" v-model="creators[i].creator"></td>
+                            <td><input type="number" name="order" class="input" v-model="creators[i].order"></input>
+                            </td>
+                            <td>
+                                <button class="button is-link is-small" :disabled="creators[i].saved"
+                                        @click="saveCreator(creators[i])">
+                                    salvar
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -169,7 +169,7 @@
         <b-modal v-model="seriesExist" :width="400" :height="400">
             <div class="card">
                 <div class="card-content">
-                    <div class="content has-text-centered">
+                    <div class="content has-text-centered mt-3">
                         <p>Série já existe</p>
                         <button class="button is-primary" autofocus @click="seriesExist = false">FECHAR</button>
                     </div>
@@ -220,9 +220,6 @@ export default {
         media() {
             return this.$store.getters.getMedia
         }
-    },
-    watch: {
-        creators(){}
     },
     methods: {
         delStar(ys) {
@@ -351,7 +348,7 @@ export default {
         },
 
         saveCast(c) {
-            if(this.series_id) {
+            if (this.series_id) {
                 axios.post('/api/cast/series/store', {
                     actor: c.actor,
                     character: c.character,
@@ -359,7 +356,7 @@ export default {
                     star: c.star,
                     series_id: this.series_id
                 }).then(response => {
-                    if(response.status === 200) {
+                    if (response.status === 200) {
                         c.saved = true
                     }
                 }).catch(error => {
@@ -369,14 +366,14 @@ export default {
         },
 
         saveCreator(c) {
-            if(this.series_id) {
+            if (this.series_id) {
                 console.log('Creator', c.creator, c.order, this.series_id)
                 axios.post('/api/creators/store', {
                     creator: c.creator,
                     order: c.order,
                     series_id: this.series_id
                 }).then(response => {
-                    if(response.status === 200) {
+                    if (response.status === 200) {
                         c.saved = true
                     }
                 }).catch(error => {

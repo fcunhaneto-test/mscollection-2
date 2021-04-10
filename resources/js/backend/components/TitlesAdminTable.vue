@@ -13,7 +13,7 @@
         </thead>
         <tbody>
         <tr v-for="title in titles" :key="title.id">
-            <td><a class="table-link" href="#" @click="toPage(title)">{{ title.title }}</a></td>
+            <td><a class="table-link" href="#" @click="toEdit(title)">{{ title.title }}</a></td>
             <td>{{ title.year }}</td>
             <td v-if="table ==='movies'">{{ title.time | strTime }}</td>
             <td>
@@ -44,8 +44,10 @@ export default {
     },
     methods: {
         toEdit(title) {
+            console.log('SET TITLE', title)
             this.$store.commit('SET_TITLE', title)
-        }
+            this.$router.push({ name: 'edit-movie' })
+        },
     }
 }
 </script>

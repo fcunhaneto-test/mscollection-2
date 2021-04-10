@@ -5,6 +5,7 @@ import TitlesAdmin from "./backend/TitlesAdmin";
 
 import NewMovie from "./backend/NewMovie";
 import NewSeries from "./backend/NewSeries";
+import EditMovie from "./backend/EditMovie";
 
 import Login from "./auth/Login";
 import Logout from "./auth/Logout";
@@ -53,6 +54,12 @@ const routes = [
         component: NewSeries,
         name: 'new-series',
         props: {table: 'series'}
+    },
+    {
+        path: '/admin/editar/filme',
+        component: EditMovie,
+        name: 'edit-movie',
+        props: {table: 'movies'}
     },
 ];
 

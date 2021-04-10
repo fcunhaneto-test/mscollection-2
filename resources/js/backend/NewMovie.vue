@@ -69,7 +69,7 @@
                         </datalist>
                     </b-field>
                 </div>
-                <div class="column is-12">
+                <div class="column is-12 mb-0 pb-0">
                     <label class="label">Mídia</label>
                     <div class="columns is-multiline">
                         <div v-for="m in media" class="column is-3">
@@ -79,7 +79,7 @@
                     </div>
                     <br>
                 </div>
-                <div class="column is-8">
+                <div class="column is-8 mt-0 pt-0">
                     <div class="field-body">
                         <div class="field">
                             <label for="poster" class="label">Poster URL</label>
@@ -96,14 +96,14 @@
                     </div>
                 </div>
                 <div class="columns is-centered">
-                    <div class="column is-one-third">
+                    <div class="column is-one-third mt-3">
                         <button class="button is-primary is-fullwidth" @click="saveMovie">ENVIAR</button>
                     </div>
                     <div class="column is-narrow"></div>
                 </div>
                 <hr>
-                <h2 class="title is-4">Elenco</h2>
                 <div class="column is-12">
+                    <h2 class="title is-4">Elenco</h2>
                     <table v-if="cast" class="table is-fullwidth">
                         <thead>
                         <tr>
@@ -129,8 +129,9 @@
                         </tr>
                         </tbody>
                     </table>
-
-                    <hr>
+                </div>
+                <hr>
+                <div class="column is-12">
                     <h2 class="title is-4">Diretores</h2>
                     <div class="column is-12">
                         <table v-if="directors" class="table is-fullwidth">
