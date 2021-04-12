@@ -97,7 +97,7 @@ export default {
         axios.get('/api/media').then(response => {
             this.$store.commit('SET_MEDIA', response.data)
         }).catch(error => console.error(error))
-        axios.get('/api/categories').then(response => {
+        axios.get('/api/category').then(response => {
             this.$store.commit('SET_CATEGORIES', response.data)
         }).catch(error => console.error(error))
     }

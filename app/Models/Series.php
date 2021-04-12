@@ -20,7 +20,7 @@ class Series extends Model
 
     public function media()
     {
-        return $this->belongsToMany(Media::class)->withPivot('active');
+        return $this->belongsToMany(Media::class);
     }
 
     public function creators()

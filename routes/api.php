@@ -59,19 +59,28 @@ Route::prefix('media')->group(function() {
     Route::get('', 'Qualifiers\MediaController@index') ;
 });
 
-Route::prefix('categories')->group(function() {
+Route::prefix('category')->group(function() {
     Route::get('', 'Qualifiers\CategoryController@index') ;
 });
 
 Route::prefix('cast')->group(function() {
-    Route::post('/movie/store', 'Cast\CastController@castMovie')->middleware('can:isAdmin');
-    Route::post('/series/store', 'Cast\CastController@castSeries')->middleware('can:isAdmin');
+    Route::post('/movie/store', 'Cast\CastController@storeCastMovie')->middleware('can:isAdmin');
+    Route::post('/series/store', 'Cast\CastController@storeCastMovie')->middleware('can:isAdmin');
+    Route::post('/movie/store', 'Cast\CastController@updateCastMovie')->middleware('can:isAdmin');
 });
 
-Route::prefix('directors')->group(function() {
+Route::prefix('director')->group(function() {
     Route::post('/store', 'Producers\DirectorController@store')->middleware('can:isAdmin');
 });
 
-Route::prefix('creators')->group(function() {
+Route::prefix('creator')->group(function() {
     Route::post('/store', 'Producers\CreatorController@store')->middleware('can:isAdmin');
+});
+
+Route::prefix('actor')->group(function() {
+    Route::get('', 'Cast\ActorController@index');
+});
+
+Route::prefix('character')->group(function() {
+    Route::get('', 'Cast\CharacterController@index');
 });

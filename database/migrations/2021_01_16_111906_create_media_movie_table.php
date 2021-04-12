@@ -16,7 +16,6 @@ class CreateMediaMovieTable extends Migration
         Schema::create('media_movie', function (Blueprint $table) {
             $table->unsignedTinyInteger('media_id');
             $table->unsignedInteger('movie_id');
-            $table->string('slug', 25);
 
             $table->primary(['media_id', 'movie_id']);
 

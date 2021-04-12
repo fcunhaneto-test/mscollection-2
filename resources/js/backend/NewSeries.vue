@@ -3,6 +3,8 @@
         <div class="columns is-centered">
             <div class="column is-four-fifths">
                 <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="true"></b-loading>
+                <h1 class="title is-3">Inserir Séries</h1>
+                <hr>
                 <h2 class="title is-4">Scrapping From</h2>
                 <div class="field-body">
                     <div class="field">

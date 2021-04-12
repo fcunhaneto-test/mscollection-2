@@ -16,17 +16,17 @@ class Media extends Model
 
     public function movies()
     {
-        return $this->belongsToMany(Movie::class)->withPivot('active');
+        return $this->belongsToMany(Movie::class);
     }
 
     public function series()
     {
-        return $this->belongsToMany(Series::class)->withPivot('active');
+        return $this->belongsToMany(Series::class);
     }
 
     public function seasons()
     {
-        return $this->belongsToMany(Season::class)->withPivot('active');
+        return $this->belongsToMany(Season::class);
     }
 
     public function streams()

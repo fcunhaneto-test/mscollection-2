@@ -57,12 +57,7 @@ class MovieController extends Controller
         curl_close($ch);
         Storage::disk('posters')->put($movie->poster, $result);
 
-        $media_id = $request->media;
-
-        for($i = 0; $i < count($media_id); $i++) {
-            $media = Media::findOrFail($media_id[$i]);
-            $movie->media()->attach($media->id, ['active' => true, 'slug' => $media->slug]);
-        }
+        $movie->media()->sync($request->media);
 
         return response()->json($movie->id, 200);
     }
@@ -94,6 +89,8 @@ class MovieController extends Controller
 
         $movie->save();
 
-        return response()->json('', 200);
+        $movie->media()->sync($request->media);
+
+        return response()->json($movie->id, 200);
     }
 }

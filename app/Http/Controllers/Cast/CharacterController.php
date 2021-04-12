@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\Qualifiers;
+namespace App\Http\Controllers\Cast;
 
 use App\Http\Controllers\Controller;
-use App\Models\Qualifiers\Media;
+use App\Models\Cast\Character;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
-class MediaController extends Controller
+class CharacterController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return Media[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Http\Response
+     * @return Character[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Http\Response
      */
     public function index()
     {
-        return Media::all();
+        return Character::all();
     }
 
     /**
@@ -83,9 +82,5 @@ class MediaController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function mediaTitle(Request $request) {
-
     }
 }

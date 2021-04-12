@@ -1,21 +1,9 @@
 <template>
     <div class="container is-max-widescreen mt-5">
         <div class="columns is-centered">
-
             <div class="column is-four-fifths">
-                <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="true"></b-loading>
-                <h1 class="title is-3">Inserir Filme</h1>
+                <h1 class="title is-3">Editar Filme</h1>
                 <hr>
-                <h2 class="title is-4">Scrapping From</h2>
-                <div class="field-body">
-                    <div class="field">
-                        <label for="imdb" class="label">IMDB</label>
-                        <input id="imdb" name="imdb" v-model="imdb" class="input" type="text"
-                               @keyup.enter="imdbScraping">
-                    </div>
-                </div>
-                <hr>
-                <h2 class="title is-4">Filme Formulário</h2>
                 <div class="columns is-multiline">
                     <div class="column is-6">
                         <div class="field">
@@ -42,13 +30,24 @@
                             <input id="time" name="time" v-model="formData.time" class="input" type="time">
                         </div>
                     </div>
-                    <div class="column is-6">
+                    <div class="column is-3">
                         <div class="field">
-                            <label class="label">Rating</label>
+                            <label class="label">Our Rating</label>
                             <a v-for="ys in yellow" href="#" :key="'yellow_' + ys" @click="delStar(ys)">
                                 <span class="icon has-text-orange"><i class="fas fa-star"></i></span>
                             </a>
                             <a v-for="ws in white" href="#" :key="'white_'+ ws" @click="addStar(ws)">
+                                <span class="icon has-text-orange"><i class="far fa-star"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="column is-3">
+                        <div class="field">
+                            <label class="label">IMDB Rating</label>
+                            <a v-for="ys in y_imdb" href="#" :key="'y-imdb-' + ys" @click="delIStar(ys)">
+                                <span class="icon has-text-orange"><i class="fas fa-star"></i></span>
+                            </a>
+                            <a v-for="ws in w_imdb" href="#" :key="'w-imdb-'+ ws" @click="addIStar(ws)">
                                 <span class="icon has-text-orange"><i class="far fa-star"></i></span>
                             </a>
                         </div>
@@ -79,14 +78,12 @@
                                 <label :for="m.slug">{{ m.name }}</label>
                             </div>
                         </div>
-                        <br>
                     </div>
-                    <div class="column is-12 mt-0 pt-0">
-                        <div class="field-body">
-                            <div class="field">
-                                <label for="poster" class="label">Poster URL</label>
-                                <input id="poster" name="imdb" v-model="formData.img_url" class="input" type="text">
-                            </div>
+                    <div class="column is-12">
+                        <div class="field">
+                            <label for="poster" class="label">Poster</label>
+                            <input id="poster" name="poster" v-model="formData.poster"
+                                   class="input" type="text" readonly>
                         </div>
                     </div>
                     <div class="column is-12">
@@ -99,7 +96,7 @@
                     </div>
                     <div class="column is-4 mt-3"></div>
                     <div class="column is-4 mt-3">
-                        <button class="button is-primary is-fullwidth" @click="saveMovie">ENVIAR</button>
+                        <button class="button is-primary is-fullwidth" @click="editMovie">ENVIAR</button>
                     </div>
                     <div class="column is-4 mt-3"></div>
                     <hr>
@@ -122,13 +119,20 @@
                             </thead>
                             <tbody>
                             <tr v-for="(ac, i) in cast" :key="i">
-                                <td><input type="text" class="input" v-model="ac.actor"></td>
-                                <td><input type="text" class="input" v-model="ac.character"></td>
-                                <td><input type="checkbox" v-model="ac.star"></td>
-                                <td><input type="number" name="order" class="input is-small" v-model="ac.order"></input>
+                                <td>
+                                    <b-input list="actors" name="actor" v-model="cast[i].actor"
+                                             style="width: 100%;"/>
+                                    <datalist id="actors">
+                                        <option v-for="actor in actors" :value="actor.name" style="color: red"/>
+                                    </datalist>
+                                </td>
+                                <td><input type="text" class="input" v-model="cast[i].character"></td>
+                                <td><input type="checkbox" v-model="cast[i].star"></td>
+                                <td><input type="number" name="order" class="input is-small"
+                                           v-model="cast[i].order"></input>
                                 </td>
                                 <td>
-                                    <button class="button is-link is-small" :disabled="ac.saved"
+                                    <button class="button is-link is-small" :disabled="cast[i].saved"
                                             @click="saveCast(cast[i])">
                                         salvar
                                     </button>
@@ -156,8 +160,10 @@
                                 </thead>
                                 <tbody>
                                 <tr v-if="directors" v-for="(d, i) in directors" :key="i">
-                                    <td><input type="text" name="director" class="input" v-model="directors[i].director"></td>
-                                    <td><input type="number" name="order" class="input" v-model="directors[i].order"></input>
+                                    <td><input type="text" name="director" class="input"
+                                               v-model="directors[i].director"></td>
+                                    <td><input type="number" name="order" class="input"
+                                               v-model="directors[i].order"></input>
                                     </td>
                                     <td>
                                         <button class="button is-link is-small" :disabled="directors[i].saved"
@@ -183,16 +189,6 @@
                 </div>
             </div>
         </b-modal>
-        <b-modal v-model="movieExist" :width="400" :height="400">
-            <div class="card">
-                <div class="card-content">
-                    <div class="content has-text-centered">
-                        <p>Filme já existe</p>
-                        <button class="button is-primary" autofocus @click="movieExist = false">FECHAR</button>
-                    </div>
-                </div>
-            </div>
-        </b-modal>
     </div>
 </template>
 
@@ -202,32 +198,17 @@ export default {
     name: "NewMovie",
     data() {
         return {
-            isLoading: false,
             movieSaved: false,
-            movieExist: false,
             yellow: 0,
             white: 5,
+            y_imdb: 0,
             w_imdb: 5,
-            formData: {
-                title: '',
-                original_title: '',
-                year: 1900,
-                time: '00:00',
-                our_rating: 0,
-                imdb_rating: false,
-                category_1: null,
-                category_2: null,
-                poster: '',
-                summary: '',
-                media: [],
-                img_url: '',
-                img_width: 0,
-                img_height: 0,
-            },
+            formData: {},
             imdb: '',
-            movie_id: 0,
-            cast: [],
+            cast: null,
             directors: [],
+            actors: null,
+            characters: null,
         }
     },
     computed: {
@@ -236,6 +217,9 @@ export default {
         },
         media() {
             return this.$store.getters.getMedia
+        },
+        title() {
+            return this.$store.getters.getTitle
         }
     },
     methods: {
@@ -247,106 +231,31 @@ export default {
                 this.yellow = ys
                 this.white = 5 - ys
             }
-            this.formData.rating = this.yellow
+            this.formData.our_rating = this.yellow
         },
         addStar(ws) {
             this.yellow += ws
             this.white = 5 - this.yellow
             this.formData.our_rating = this.yellow
         },
-        /**
-         * Scraping datas from IMDB
-         */
-        imdbScraping() {
-            this.isLoading = true
-            const options1 = {
-                method: 'GET',
-                url: 'https://imdb8.p.rapidapi.com/title/get-full-credits',
-                params: {tconst: this.imdb},
-                headers: {
-                    'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
-                    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
-                }
-            };
-
-            axios.request(options1).then(response => {
-                this.formData.original_title = response.data.base.title
-                this.formData.year = response.data.base.year
-                this.formData.time = this.strTime(response.data.base.runningTimeInMinutes)
-                this.formData.img_url = response.data.base.image.url
-                this.formData.img_width = response.data.base.image.width
-                this.formData.img_height = response.data.base.image.height
-
-                for (let i = 0; i < 10; i++) {
-                    if (!response.data.cast[i].name) {
-                        break
-                    }
-                    let order = i + 1
-                    let character = ''
-                    if (response.data.cast[i].characters.length === 1) {
-                        character = response.data.cast[i].characters[0]
-                    } else if (response.data.cast[i].characters.length > 1) {
-                        character = response.data.cast[i].characters[0] + ' / ' + response.data.cast[i].characters[1]
-                    }
-                    this.cast.push({
-                        actor: response.data.cast[i].name,
-                        character: character,
-                        star: false,
-                        order: order,
-                        saved: false
-                    })
-                }
-
-                let d = response.data.crew.director
-                for (let i = 0; i < d.length; i++) {
-                    let order = i + 1
-                    this.directors.push({director: d[i].name, order: order, saved: false});
-                }
-                this.isLoading = false
-            }).catch(error => console.error(error))
-
-            const options2 = {
-                method: 'GET',
-                url: 'https://imdb8.p.rapidapi.com/title/get-genres',
-                params: {tconst: this.imdb},
-                headers: {
-                    'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
-                    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
-                }
-            };
-
-            axios.request(options2).then(response => {
-                for (let i = 0; i < this.categories.length; i++) {
-                    if (this.categories[i].e_name === response.data[0]) {
-                        this.formData.category_1 = this.categories[i].name
-                    }
-                    if (this.categories[i].e_name === response.data[1]) {
-                        this.formData.category_2 = this.categories[i].name
-                    }
-                }
-            }).catch(error => console.error(error))
-
-            const options3 = {
-                method: 'GET',
-                url: 'https://imdb8.p.rapidapi.com/title/get-ratings',
-                params: {tconst: this.imdb},
-                headers: {
-                    'x-rapidapi-key': 'ea7aaa3ddcmshf151fb23c9b1c2ap189984jsn6f8224e2ef4e',
-                    'x-rapidapi-host': 'imdb8.p.rapidapi.com'
-                }
-            };
-
-            axios.request(options3).then(response => {
-                this.formData.imdb_rating = Math.round((response.data.rating / 2))
-            }).catch(function (error) {
-                console.error(error);
-            });
+        delIStar(ys) {
+            if (ys === 1) {
+                this.y_imdb = 0
+                this.w_imdb = 5
+            } else {
+                this.y_imdb = ys
+                this.w_imdb = 5 - ys
+            }
+            this.formData.rating = this.y_imdb
         },
-        /**
-         * Send data to store movie.
-         */
-        saveMovie() {
-            axios.post('/api/movies/store', this.formData).then(response => {
+        addIStar(ws) {
+            this.y_imdb += ws
+            this.w_imdb = 5 - this.y_imdb
+            this.formData.our_rating = this.y_imdb
+        },
+
+        editMovie() {
+            axios.put('/api/movies/update', this.formData).then(response => {
                 if (response.status === 200) {
                     this.movie_id = parseInt(response.data);
                     this.movieSaved = true
@@ -358,6 +267,7 @@ export default {
                 console.error(error)
             })
         },
+
         saveCast(c) {
             if (this.movie_id) {
                 axios.post('/api/cast/movie/store', {
@@ -409,20 +319,49 @@ export default {
                 saved: false
             })
         },
-        /**
-         * Covert time im minutes to hour:minutes
-         * @param t
-         * @returns {string}
-         */
-        strTime(t) {
-            const minute = t % 60
-            const hour = Math.floor((t / 60))
-            if (minute < 10) {
-                return '0' + hour + ':0' + minute
-            }
-            return '0' + hour + ':' + minute
-        },
     },
+    beforeMount() {
+        this.formData = {
+            id: this.title.id,
+            title: this.title.title,
+            original_title: this.title.original_title,
+            year: this.title.year,
+            time: this.title.time,
+            our_rating: this.title.our_rating,
+            imdb_rating: this.title.imdb_rating,
+            category_1: this.title.category_1,
+            category_2: this.title.category_2,
+            poster: this.title.poster,
+            summary: this.title.summary,
+            media: [],
+        }
+
+        this.yellow = this.formData.our_rating
+        this.white = 5 - this.formData.our_rating
+        this.y_imdb = this.formData.imdb_rating
+        this.w_imdb = 5 - this.formData.imdb_rating
+
+        axios.get(`/api/movies/media/${this.title.id}`).then(response => {
+            for (let i = 0; i < response.data.length; i++) {
+                this.formData.media.push(response.data[i].id)
+            }
+            console.log('MEDIA', this.formData.media)
+        }).catch(error => console.error(error))
+
+        axios.get(`/api/movies/cast/${this.title.id}`).then(response => {
+            this.cast = response.data
+            console.log('CAST', this.cast)
+        }).catch(error => console.error(error))
+
+        axios.get(`/api/actor`).then(response => {
+            this.actors = response.data
+        }).catch(error => console.error(error))
+
+        axios.get(`/api/character`).then(response => {
+            this.characters = response.data
+        }).catch(error => console.error(error))
+    }
+
 }
 </script>
 
@@ -434,3 +373,4 @@ hr {
     background-color: #000000;
 }
 </style>
+

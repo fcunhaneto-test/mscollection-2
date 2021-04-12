@@ -16,7 +16,6 @@ class CreateMediaSeasonTable extends Migration
         Schema::create('media_season', function (Blueprint $table) {
             $table->unsignedTinyInteger('media_id');
             $table->unsignedInteger('season_id');
-            $table->string('slug', 25);
 
             $table->primary(['media_id', 'season_id']);
 
